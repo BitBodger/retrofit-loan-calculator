@@ -1,0 +1,331 @@
+/* ========================================================= */
+/*                       INDEX.CSS                          */
+/* ========================================================= */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:wght@400;700&display=swap');
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: #4C78D6;
+  background-color: #ffd0ad;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #fa64ff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #f25388;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  font-family: 'Libre Bodoni', serif;
+}
+
+/* Global button styles */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #4C78D6;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* ========================================================= */
+/*                        APP.CSS                           */
+/* ========================================================= */
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: left;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start; /* Align items at the top */
+  gap: 20px;              /* Space between the ASCII art and the form */
+}
+
+.ascii-art {
+  flex: 1;                /* Make it take some space */
+}
+
+/* ========================================================= */
+/*                    CALCULATOR.CSS                        */
+/* ========================================================= */
+
+.calculator {
+  min-width: 1000px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-wrapper {
+  display: flex; 
+  flex-direction: column;   /* Stack everything vertically in this wrapper */
+  align-items: flex-start;  /* Align items to the left/top */
+  gap: 1rem;                /* Space between heading, form, etc. */
+  margin: 0rem 4rem 0rem;                /* No auto-centering */
+  padding: 1rem;
+  max-width: 1200;
+}
+
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;    
+  gap: 1rem;
+  max-width: 1000px;       /* or any width you prefer */
+  margin: 0 auto;          /* center the container horizontally */
+  padding: 0;
+  padding-bottom: 1rem; 
+}
+
+.form-section {
+  flex: 1 1 100px;         /* basis: 250px, can shrink or grow */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.form-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+}
+
+/* Form and input styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem; /* Slightly smaller spacing */
+}
+
+label {
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+/* Wrap the checkbox and label in a small container */
+.form-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between the button and checkbox area */
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem; /* space between the checkbox and its label */
+  margin: 0 1.5rem 0;
+}
+
+
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  transform: scale(1.5);
+  -webkit-appearance: none; /* Remove default styling in WebKit browsers */
+  -moz-appearance: none;    /* Remove default styling in Firefox */
+  appearance: none;         /* Remove default styling */
+  border: 1.5px solid #4C78D6;   /* Blue border */
+  background-color: #ffd0ad;   /* Pink background */
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 7px;
+  width: 4px;
+  height: 14px;
+  border: 1px solid #4C78D6;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+
+input {
+  width: 200px;
+  padding: 0.3rem;
+  border: 1px solid #4C78D6;
+  border-radius: 4px;
+  background-color: #fff9f4; /* A light blue-ish colour */
+  color: #4C78D6;
+}
+
+/* Calculator-specific button styles (override the global button) */
+button {
+  padding: 0.5rem 1rem;
+  background-color: #4C78D6;
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #5e89e7;
+}
+
+/* Table styling for calculator output */
+table {
+  width: 1000px;
+  border-collapse: collapse;
+  margin: 2rem 0rem; /* Add a bit of vertical spacing above the table */
+  table-layout: fixed;
+}
+
+table th {
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #4C78D6; /* Original border color (#4C78D6) */
+  transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  height: 80px;
+  background-color: #ffc498;
+}
+
+table td {
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #4C78D6; /* Original border color (#4C78D6) */
+  transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  background-color: #ffdbc0;
+}
+
+/* Row hover styling: changes background, text, and border colors for all cells */
+table tbody tr:hover td {
+  background-color: #4C78D6;
+  color: #ffd0ad;
+  border-top: 1px solid #ffd0ad;
+  border-bottom: 1px solid #ffd0ad;
+  border-left: 1px solid #ffd0ad;
+  border-right: 1px solid #ffd0ad;
+}
+
+/* Override the first cell's left border in the hovered row */
+table tbody tr:hover td:first-child {
+  border-left: 1px solid #4C78D6;
+}
+
+/* Override the last cell's right border in the hovered row */
+table tbody tr:hover td:last-child {
+  border-right: 1px solid #4C78D6;
+}
+
+/* Individual cell hover styling: when hovering over a cell within a hovered row, make text bold */
+table tbody tr:hover td:hover {
+  font-weight: bold;
+}
+
+.header-container {
+  display: flex;
+  align-items: flex-start; /* Align items at the top */
+  gap: 2rem;
+  box-sizing: border-box;
+  margin: 0 auto 2rem auto;  /* 2rem bottom margin, auto left/right to center */
+  padding: 1rem;
+
+  width: fit-content;        /* Container only as wide as its contents */
+  min-height: 100px;
+  /* No need for justify-content if we want the items to stay together */
+}
+
+.header-container .ascii-art {
+  font-family: monospace;
+  white-space: pre;
+  margin-top: 1.2rem;
+  padding: 0;
+  line-height: 1.1;
+}
+
+.header-container .title {
+  font-family: 'Libre Bodoni', serif;
+  font-size: 1.2rem;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.DiscountExplainer {
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: bold;
+  max-width: 700px;
+  margin: 0 3rem;
+}
+
+/* Keep the checkbox label on a single line */
+.checkbox-wrapper label {
+  white-space: nowrap; 
+}
+
+/* ========================================================= */
+/*                    FOOTER.CSS                        */
+/* ========================================================= */
+
+.site-footer {
+  font-family: 'Libre Bodoni', serif;  /* Use the same font as the title */
+  font-size: 0.9rem;                   /* Much smaller than the title */
+  text-align: center;
+  padding: 1rem 0;
+  color: #4C78D6;                         /* Sophisticated, neutral text color */
+  border-top: 1px solid #4C78D6;          /* A subtle top border */
+  margin-top: 2rem;                    /* Space from the content above */
+}
+
+.site-footer a {
+  color: #4C78D6;                      /* Link color matching your theme */
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
