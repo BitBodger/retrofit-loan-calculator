@@ -3,14 +3,14 @@ import axios from 'axios';
 
 function Calculator() {
   const [inputs, setInputs] = useState({
-    installation_cost: '5000',
-    installation_lifetime: '20',
-    energy_savings_per_year: '600',
-    loan_interest_rate: '6.1',
+    installation_cost: '',
+    installation_lifetime: '',
+    energy_savings_per_year: '',
+    loan_interest_rate: '6',
     loan_term: '5',
     discount_rate: '3',
     energy_price_escalation: '5',
-    down_payment: '1000',
+    down_payment: '',
     government_subsidy: ''
   });
   
@@ -48,10 +48,9 @@ function Calculator() {
   }, [inputs, applyDiscount]); // recalc depends on these values
 
   useEffect(() => {
-    if (results !== null) {
-      recalc();
-    }
-  }, [applyDiscount, recalc, results]);
+    recalc();
+  }, [inputs, applyDiscount, recalc]);
+  
 
   // Calculate the loan amount from the inputs
   const calculatedLoanAmount = (
