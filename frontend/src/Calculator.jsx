@@ -42,7 +42,7 @@ function Calculator() {
     };
 
     axios
-      .post('http://127.0.0.1:8000/api/calculate', payload)
+      .post('./api/calculate', payload)
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error));
   }, [inputs, applyDiscount]); // recalc depends on these values
