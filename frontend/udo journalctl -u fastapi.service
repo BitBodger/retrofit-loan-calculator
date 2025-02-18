@@ -1,0 +1,18 @@
+[0;1;32m●[0m fastapi.service - FastAPI Application
+     Loaded: loaded (]8;;file://retrofit-loan-calculator-droplet/etc/systemd/system/fastapi.service/etc/systemd/system/fastapi.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Tue 2025-02-18 13:28:09 UTC; 1s ago
+   Main PID: 1877 (gunicorn)
+      Tasks: 1 (limit: 1110)
+     Memory: 16.9M (peak: 17.2M)
+        CPU: 175ms
+     CGroup: /system.slice/fastapi.service
+             └─[0;38;5;245m1877 /home/ben/retrofit-loan-calculator/venv/bin/python3 /home/ben/retrofit-loan-calculator/venv/bin/gunicorn backend.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000[0m
+
+Feb 18 13:28:09 retrofit-loan-calculator-droplet systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mfastapi.service: Failed with result 'exit-code'.[0m
+Feb 18 13:28:09 retrofit-loan-calculator-droplet systemd[1]: fastapi.service: Scheduled restart job, restart counter is at 1.
+Feb 18 13:28:09 retrofit-loan-calculator-droplet systemd[1]: Started fastapi.service - FastAPI Application.
+Feb 18 13:28:09 retrofit-loan-calculator-droplet gunicorn[1877]: [2025-02-18 13:28:09 +0000] [1877] [INFO] Starting gunicorn 23.0.0
+Feb 18 13:28:09 retrofit-loan-calculator-droplet gunicorn[1877]: [2025-02-18 13:28:09 +0000] [1877] [ERROR] Connection in use: ('127.0.0.1', 8000)
+Feb 18 13:28:09 retrofit-loan-calculator-droplet gunicorn[1877]: [2025-02-18 13:28:09 +0000] [1877] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
+Feb 18 13:28:10 retrofit-loan-calculator-droplet gunicorn[1877]: [2025-02-18 13:28:10 +0000] [1877] [ERROR] Connection in use: ('127.0.0.1', 8000)
+Feb 18 13:28:10 retrofit-loan-calculator-droplet gunicorn[1877]: [2025-02-18 13:28:10 +0000] [1877] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
