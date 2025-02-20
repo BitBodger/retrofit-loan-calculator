@@ -188,7 +188,7 @@ function Calculator() {
           </div>
         </form>
         
-        <hr />
+        {results && <hr />}
 
         {results && (
           <div className="results-container">
