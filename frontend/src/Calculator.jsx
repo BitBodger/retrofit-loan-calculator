@@ -14,7 +14,7 @@ function Calculator() {
     government_subsidy: ''
   });
 
-  // State to choose whether to apply discounting (live control)
+  // State to choose whether to apply discounting (for UI display only)
   const [applyDiscount, setApplyDiscount] = useState(true);
   const [results, setResults] = useState(null);
 
@@ -28,7 +28,7 @@ function Calculator() {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Recalculation function wrapped in useCallback
+  // Recalculation function – note that it no longer depends on applyDiscount
   const recalc = useCallback(() => {
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
@@ -36,7 +36,8 @@ function Calculator() {
       energy_savings_per_year: parseFloat(inputs.energy_savings_per_year),
       loan_interest_rate: parseFloat(inputs.loan_interest_rate) / 100,
       loan_term: parseInt(inputs.loan_term, 10),
-      discount_rate: applyDiscount ? parseFloat(inputs.discount_rate) / 100 : 0,
+      // Always send the discount_rate from the inputs
+      discount_rate: parseFloat(inputs.discount_rate) / 100,
       energy_price_escalation: parseFloat(inputs.energy_price_escalation) / 100,
       down_payment: parseFloat(inputs.down_payment) || 0,
       government_subsidy: parseFloat(inputs.government_subsidy) || 0
@@ -46,12 +47,7 @@ function Calculator() {
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error));
-  }, [inputs, applyDiscount]);
-
-  // Recalculate when applyDiscount changes
-  useEffect(() => {
-    recalc();
-  }, [applyDiscount, recalc]);
+  }, [inputs]);
 
   // Calculate the loan amount from the inputs
   const calculatedLoanAmount = (
