@@ -48,14 +48,6 @@ function Calculator() {
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error));
   }, [inputs]);
-<<<<<<< HEAD
-=======
-
-  // Recalculate on component mount (or you can remove this if you only want to calculate on submit)
-  useEffect(() => {
-    recalc();
-  }, [recalc]);
->>>>>>> 4ea58650b6852345c47b6a05b215380f5b4db185
 
   // Calculate the loan amount from the inputs
   const calculatedLoanAmount = (
