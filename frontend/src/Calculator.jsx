@@ -184,18 +184,6 @@ function Calculator() {
           </div>
           <div className="form-controls">
             <button type="submit">Calculate</button>
-            <div className="checkbox-wrapper">
-              <input
-                type="checkbox"
-                name="apply_discount"
-                checked={applyDiscount}
-                onChange={handleApplyDiscountChange}
-              />
-              <label>Apply Discounting</label>
-              <p className="DiscountExplainer">
-                Discounting is the process of converting future cash flows into their present-day value, accounting for the time value of money.
-              </p>
-            </div>
           </div>
         </form>
 
@@ -250,8 +238,19 @@ function Calculator() {
               </strong>
             </div>
             {results.yearly_details && (
-              <div>
-                <h2>Results</h2>
+              <div className="results-table-wrapper">
+                <div className="results-header">
+                  <h2>Results</h2>
+                  <div className="checkbox-wrapper">
+                    <input
+                      type="checkbox"
+                      name="apply_discount"
+                      checked={applyDiscount}
+                      onChange={handleApplyDiscountChange}
+                    />
+                    <label>Apply Discounting</label>
+                  </div>
+                </div>
                 <table>
                   <thead>
                     <tr>

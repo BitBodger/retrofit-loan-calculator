@@ -308,6 +308,22 @@ table tbody tr:hover td:hover {
 }
 
 /* ========================================================= */
+/*              Results Header Styles                     */
+/* ========================================================= */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Optional: If you want the table container to span full width */
+.results-table-wrapper {
+  width: 100%;
+}
+
+
+/* ========================================================= */
 /*                    FOOTER.CSS                        */
 /* ========================================================= */
 
