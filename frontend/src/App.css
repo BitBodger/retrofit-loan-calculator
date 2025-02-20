@@ -42,6 +42,12 @@ h1 {
   font-family: 'Libre Bodoni', serif;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0.5rem;   /* or 0, or whatever you prefer */
+  margin-bottom: 0.5rem;
+}
+
+
 /* Global button styles */
 button {
   border-radius: 8px;
@@ -108,9 +114,9 @@ button:focus-visible {
   display: flex; 
   flex-direction: column;   /* Stack everything vertically in this wrapper */
   align-items: flex-start;  /* Align items to the left/top */
-  gap: 1rem;                /* Space between heading, form, etc. */
+  gap: 0rem;                /* Space between heading, form, etc. */
   margin: 0rem 4rem 0rem;                /* No auto-centering */
-  padding: 1rem;
+  padding: 0.5rem;
   max-width: 1200;
 }
 
@@ -158,9 +164,9 @@ label {
 
 .checkbox-wrapper {
   display: flex;
-  align-items: center;
+  align-items: bottom;
   gap: 0.8rem; /* space between the checkbox and its label */
-  margin: 0 1.5rem 0;
+  margin: 0 1rem 0;
 }
 
 
@@ -218,7 +224,7 @@ button:hover {
 table {
   width: 1000px;
   border-collapse: collapse;
-  margin: 2rem 0rem; /* Add a bit of vertical spacing above the table */
+  margin: 0; /* Add a bit of vertical spacing above the table */
   table-layout: fixed;
 }
 
@@ -232,7 +238,7 @@ table th {
 }
 
 table td {
-  padding: 4px;
+  padding: 2px;
   text-align: center;
   border: 1px solid #4C78D6; /* Original border color (#4C78D6) */
   transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
@@ -267,20 +273,17 @@ table tbody tr:hover td:hover {
 .header-container {
   display: flex;
   align-items: flex-start; /* Align items at the top */
-  gap: 2rem;
+  gap: 1rem;
   box-sizing: border-box;
   margin: 0 auto 2rem auto;  /* 2rem bottom margin, auto left/right to center */
-  padding: 1rem;
-
+  padding: 0rem;
   width: fit-content;        /* Container only as wide as its contents */
-  min-height: 100px;
-  /* No need for justify-content if we want the items to stay together */
 }
 
 .header-container .ascii-art {
   font-family: monospace;
   white-space: pre;
-  margin-top: 1.2rem;
+  margin-top: 0;
   padding: 0;
   line-height: 1.1;
 }
@@ -288,23 +291,35 @@ table tbody tr:hover td:hover {
 .header-container .title {
   font-family: 'Libre Bodoni', serif;
   font-size: 1.2rem;
-  margin: 0;
+  margin: 1rem 0 1rem;
   padding: 0;
   line-height: 1.2;
   text-align: left;
 }
 
 .DiscountExplainer {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-style: italic;
-  font-weight: bold;
-  max-width: 700px;
-  margin: 0 3rem;
+  font-weight: normal;
+  max-width: 1000px;
+  margin: 0 0.5rem;
 }
 
 /* Keep the checkbox label on a single line */
 .checkbox-wrapper label {
   white-space: nowrap; 
+}
+
+.summary-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.summary-totals strong {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
 }
 
 /* ========================================================= */
@@ -314,7 +329,8 @@ table tbody tr:hover td:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  flex-direction: column;
 }
 
 /* Optional: If you want the table container to span full width */
@@ -345,3 +361,10 @@ table tbody tr:hover td:hover {
 .site-footer a:hover {
   text-decoration: underline;
 }
+
+hr {
+  border: none;
+  border-top: 1.5px solid #4C78D6;
+  margin: 1.5rem 0 1rem;
+}
+

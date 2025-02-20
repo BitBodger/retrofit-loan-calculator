@@ -23,8 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
-.env
 
 # FastAPI/backend virtual environment stuff
 __pycache__/

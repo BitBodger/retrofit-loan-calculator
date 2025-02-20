@@ -64,6 +64,7 @@ function Calculator() {
   return (
     <div className="page-wrapper">
       <div className="calculator">
+      <hr />
         <form onSubmit={handleSubmit}>
           <div className="form-container">
             {/* Section 1: Installation */}
@@ -186,57 +187,61 @@ function Calculator() {
             <button type="submit">Calculate</button>
           </div>
         </form>
+        
+        <hr />
 
         {results && (
           <div className="results-container">
-            <h2>Summary</h2>
-            <div>
-              <strong>
-                {applyDiscount ? (
-                  <>
-                    <p>
-                      Total Cost: £
-                      {results.total_cost
-                        ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      Total Savings: £
-                      {results.total_savings
-                        ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      Net Savings: £
-                      {results.net_savings
-                        ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      Total Cost: £
-                      {results.total_cost
-                        ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      Total Savings: £
-                      {results.total_savings
-                        ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      Net Savings: £
-                      {results.net_savings
-                        ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                  </>
-                )}
-              </strong>
-            </div>
+            <div className="summary-container">
+              <h2>Summary</h2>
+              <div className="summary-totals">
+                <strong>
+                  {applyDiscount ? (
+                    <>
+                      <p>
+                        Total Cost: £
+                        {results.total_cost
+                          ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                      <p>
+                        Total Savings: £
+                        {results.total_savings
+                          ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                      <p>
+                        Net Savings: £
+                        {results.net_savings
+                          ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                    </> 
+                  ) : (
+                    <>
+                      <p>
+                        Total Cost: £
+                        {results.total_cost
+                          ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                      <p>
+                        Total Savings: £
+                        {results.total_savings
+                          ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                      <p>
+                        Net Savings: £
+                        {results.net_savings
+                          ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                          : 'N/A'}
+                      </p>
+                    </>
+                  )}
+                </strong>
+              </div>
+            </div>  
             {results.yearly_details && (
               <div className="results-table-wrapper">
                 <div className="results-header">
@@ -248,7 +253,7 @@ function Calculator() {
                       checked={applyDiscount}
                       onChange={handleApplyDiscountChange}
                     />
-                    <label>Apply Discounting</label>
+                    <label>Apply Discounting: <text className="DiscountExplainer">Discounting converts future cash flows into their present-day value, accounting for the time value of money.</text></label>
                   </div>
                 </div>
                 <table>
