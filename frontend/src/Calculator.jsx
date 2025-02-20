@@ -13,21 +13,22 @@ function Calculator() {
     down_payment: '',
     government_subsidy: ''
   });
-  
+
   // State to choose whether to apply discounting (live control)
   const [applyDiscount, setApplyDiscount] = useState(true);
   const [results, setResults] = useState(null);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInputs(prev => ({ ...prev, [name]: value }));
-  };
 
   const handleApplyDiscountChange = (e) => {
     setApplyDiscount(e.target.checked);
   };
 
-  // Function to call the API for recalculation
+  // Handler for form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInputs(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Recalculation function wrapped in useCallback
   const recalc = useCallback(() => {
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
@@ -45,12 +46,12 @@ function Calculator() {
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error));
-  }, [inputs, applyDiscount]); // recalc depends on these values
+  }, [inputs, applyDiscount]);
 
+  // Recalculate when applyDiscount changes
   useEffect(() => {
     recalc();
-  }, [inputs, applyDiscount, recalc]);
-  
+  }, [applyDiscount, recalc]);
 
   // Calculate the loan amount from the inputs
   const calculatedLoanAmount = (
@@ -195,7 +196,9 @@ function Calculator() {
                 onChange={handleApplyDiscountChange}
               />
               <label>Apply Discounting</label>
-              <p className="DiscountExplainer">Discounting is the process of converting future cash flows into their present-day value, accounting for the time value of money.</p>
+              <p className="DiscountExplainer">
+                Discounting is the process of converting future cash flows into their present-day value, accounting for the time value of money.
+              </p>
             </div>
           </div>
         </form>
@@ -225,7 +228,9 @@ function Calculator() {
                         ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                         : 'N/A'}
                     </p>
-                  </>) : (<>
+                  </>
+                ) : (
+                  <>
                     <p>
                       Total Cost: £
                       {results.total_cost
@@ -244,7 +249,8 @@ function Calculator() {
                         ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                         : 'N/A'}
                     </p>
-                  </>)}
+                  </>
+                )}
               </strong>
             </div>
             {results.yearly_details && (
