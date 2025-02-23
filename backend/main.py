@@ -18,20 +18,7 @@ class Measure(BaseModel):
     installation_cost: float
     repairs_and_enabling_works_cost: float
     annual_savings: float
-    lifetime: int
-
-class CalculationInput(BaseModel):
-    existing_heating_system: str
-    measures: List[Measure]
-    government_subsidy: float
-    down_payment: float
-    interest_rate: float      
-    loan_term: float           
-    energy_price_escalation: float  
-    first_year_savings: float
-    discount_rate: float
-    down_payment: float
-    government_subsidy: float     
+    lifetime: int    
 
 # Updated CalculationRequest includes discount_rate and energy_price_escalation.
 class CalculationRequest(BaseModel):
@@ -65,9 +52,11 @@ class CalculationResponse(BaseModel):
     total_cost: float
     total_savings: float
     net_savings: float
+    payback_time: int
     discounted_total_cost: float
     discounted_total_savings: float
     discounted_net_savings: float
+    discounted_payback_time: int
 
 def pmt(rate: float, nper: int, pv: float) -> float:
     """
@@ -108,9 +97,11 @@ async def calculate(request: CalculationRequest):
     # For summary calculations (nominal)
     total_energy_savings = 0.0
     total_loan_payments = 0.0
+    payback_time = 0
     # For discounted summary calculations
     total_discounted_energy_savings = 0.0
     total_discounted_loan_payments = 0.0
+    discounted_payback_time = 0
     
     # We'll also keep track of the current month in the repayment schedule.
     current_month = 0
@@ -158,6 +149,11 @@ async def calculate(request: CalculationRequest):
         # Accumulate summary values (discounted)
         total_discounted_energy_savings += annual_energy_savings * discount_factor
         total_discounted_loan_payments += annual_loan_payment * discount_factor
+        # Find payback time
+        if cumulative_net_cash_flow >= 0 and payback_time == 0:
+            payback_time = year
+        if discounted_cumulative_net_cash_flow >= 0 and discounted_payback_time == 0:
+            discounted_payback_time = year
         
         yearly_detail = YearlyCashFlow(
             year=year,
@@ -189,7 +185,9 @@ async def calculate(request: CalculationRequest):
         total_cost=round(total_cost, 2),
         total_savings=round(total_savings, 2),
         net_savings=round(net_savings, 2),
+        payback_time=payback_time,
         discounted_total_cost=round(discounted_total_cost, 2),
         discounted_total_savings=round(discounted_total_savings, 2),
-        discounted_net_savings=round(discounted_net_savings, 2)
+        discounted_net_savings=round(discounted_net_savings, 2),
+        discounted_payback_time=discounted_payback_time
     )

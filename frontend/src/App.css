@@ -1,9 +1,25 @@
 /* ========================================================= */
-/*                       INDEX.CSS                          */
+/*                         IMPORTS                           */
 /* ========================================================= */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:wght@400;700&display=swap');
+
+
+/* ========================================================= */
+/*                   GLOBAL RESETS & BOX-SIZING             */
+/* ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+/* ========================================================= */
+/*              ROOT VARIABLES & BASE STYLES                */
+/* ========================================================= */
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -18,6 +34,45 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #ffd0ad !important;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #ffd0ad !important;
+  }
+}
+
+
+/* ========================================================= */
+/*                      BASE ELEMENTS                       */
+/* ========================================================= */
+
+/* Body */
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Headings */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  font-family: 'Libre Bodoni', serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0.5rem; 
+  margin-bottom: 0.5rem;
+}
+
+/* Links */
 a {
   font-weight: 500;
   color: #fa64ff;
@@ -27,26 +82,6 @@ a {
 a:hover {
   color: #f25388;
 }
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  font-family: 'Libre Bodoni', serif;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0.5rem;   /* or 0, or whatever you prefer */
-  margin-bottom: 0.5rem;
-}
-
 
 /* Global button styles */
 button {
@@ -66,6 +101,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Light mode overrides */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -79,10 +115,19 @@ button:focus-visible {
   }
 }
 
+/* Horizontal rule */
+hr {
+  border: none;
+  border-top: 1.5px solid #4C78D6;
+  margin: 1.5rem 0 1rem;
+}
+
+
 /* ========================================================= */
-/*                        APP.CSS                           */
+/*                LAYOUT & CONTAINER STYLES                 */
 /* ========================================================= */
 
+/* Root container */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -97,11 +142,12 @@ button:focus-visible {
 }
 
 .ascii-art {
-  flex: 1;                /* Make it take some space */
+  flex: 1; /* Make it take some space */
 }
 
+
 /* ========================================================= */
-/*                    CALCULATOR.CSS                        */
+/*                  CALCULATOR & FORM STYLES                */
 /* ========================================================= */
 
 .calculator {
@@ -112,27 +158,27 @@ button:focus-visible {
 
 .page-wrapper {
   display: flex; 
-  flex-direction: column;   /* Stack everything vertically in this wrapper */
-  align-items: flex-start;  /* Align items to the left/top */
-  gap: 0rem;                /* Space between heading, form, etc. */
-  margin: 0rem 4rem 0rem;                /* No auto-centering */
+  flex-direction: column;  /* Stack everything vertically */
+  align-items: flex-start; /* Align items to the left/top */
+  gap: 0rem;               /* Space between heading, form, etc. */
+  margin: 0rem 4rem 0rem; 
   padding: 0.5rem;
-  max-width: 1200;
+  max-width: 1200;         /* NOTE: Missing unit (px, rem, etc.) if intended */
 }
 
 .form-container {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;    
+  align-items: flex-start;
   gap: 1rem;
-  max-width: 1000px;       /* or any width you prefer */
-  margin: 0 auto;          /* center the container horizontally */
+  max-width: 1000px;
+  margin: 0 auto; /* centre horizontally */
   padding: 0;
-  padding-bottom: 1rem; 
+  padding-bottom: 1rem;
 }
 
 .form-section {
-  flex: 1 1 100px;         /* basis: 250px, can shrink or grow */
+  flex: 1 1 100px; /* basis: 100px, can shrink/grow */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -143,11 +189,11 @@ button:focus-visible {
   font-size: 1.3rem;
 }
 
-/* Form and input styling */
+/* Form groups & labels */
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.75rem; /* Slightly smaller spacing */
+  margin-bottom: 0.75rem;
 }
 
 label {
@@ -155,7 +201,7 @@ label {
   font-weight: bold;
 }
 
-/* Wrap the checkbox and label in a small container */
+/* Form controls (buttons, checkboxes, etc.) */
 .form-controls {
   display: flex;
   align-items: center;
@@ -165,11 +211,13 @@ label {
 .checkbox-wrapper {
   display: flex;
   align-items: bottom;
-  gap: 0.8rem; /* space between the checkbox and its label */
+  gap: 0.8rem;
   margin: 0 1rem 0;
 }
 
-
+.checkbox-wrapper label {
+  white-space: nowrap; 
+}
 
 .checkbox-wrapper input[type="checkbox"] {
   width: 1rem;
@@ -178,7 +226,7 @@ label {
   -webkit-appearance: none; /* Remove default styling in WebKit browsers */
   -moz-appearance: none;    /* Remove default styling in Firefox */
   appearance: none;         /* Remove default styling */
-  border: 1.5px solid #4C78D6;   /* Blue border */
+  border: 1.5px solid #4C78D6; /* Blue border */
   background-color: #ffd0ad;   /* Pink background */
   cursor: pointer;
   position: relative;
@@ -188,25 +236,24 @@ input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
   top: -6px;
-  left: 7px;
+  left: 9px;
   width: 4px;
-  height: 14px;
+  height: 16px;
   border: 1px solid #4C78D6;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
-
 
 input {
   width: 200px;
   padding: 0.3rem;
   border: 1px solid #4C78D6;
   border-radius: 4px;
-  background-color: #fff9f4; /* A light blue-ish colour */
+  background-color: #fff9f4;
   color: #4C78D6;
 }
 
-/* Calculator-specific button styles (override the global button) */
+/* Override the global button styles specifically for the calculator */
 button {
   padding: 0.5rem 1rem;
   background-color: #4C78D6;
@@ -220,18 +267,22 @@ button:hover {
   background-color: #5e89e7;
 }
 
-/* Table styling for calculator output */
+
+/* ========================================================= */
+/*                   TABLE & RESULTS STYLES                 */
+/* ========================================================= */
+
 table {
   width: 1000px;
   border-collapse: collapse;
-  margin: 0; /* Add a bit of vertical spacing above the table */
+  margin: 0;
   table-layout: fixed;
 }
 
 table th {
   padding: 4px;
   text-align: center;
-  border: 1px solid #4C78D6; /* Original border color (#4C78D6) */
+  border: 1px solid #4C78D6;
   transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
   height: 80px;
   background-color: #ffc498;
@@ -240,12 +291,12 @@ table th {
 table td {
   padding: 2px;
   text-align: center;
-  border: 1px solid #4C78D6; /* Original border color (#4C78D6) */
+  border: 1px solid #4C78D6;
   transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
   background-color: #ffdbc0;
 }
 
-/* Row hover styling: changes background, text, and border colors for all cells */
+/* Row hover styling */
 table tbody tr:hover td {
   background-color: #4C78D6;
   color: #ffd0ad;
@@ -255,29 +306,89 @@ table tbody tr:hover td {
   border-right: 1px solid #ffd0ad;
 }
 
-/* Override the first cell's left border in the hovered row */
+/* Fix first & last cell borders on hover */
 table tbody tr:hover td:first-child {
   border-left: 1px solid #4C78D6;
 }
-
-/* Override the last cell's right border in the hovered row */
 table tbody tr:hover td:last-child {
   border-right: 1px solid #4C78D6;
 }
 
-/* Individual cell hover styling: when hovering over a cell within a hovered row, make text bold */
+/* Bold text on hovered cell */
 table tbody tr:hover td:hover {
   font-weight: bold;
 }
 
+/* Results header */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-direction: column;
+}
+
+/* Make table container span full width if desired */
+.results-table-wrapper {
+  width: 100%;
+}
+
+/* Summary section */
+.summary-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.summary-totals {
+  display: flex;
+  gap: 5rem;
+}
+
+.summary-totals strong {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+/* No-payback message styling */
+.no-payback {
+  font-size: 0.8rem;
+  color: #ff095b;
+  font-weight: 600;
+  font-style: italic;
+  display: inline-block;
+  max-width: 10rem; /* Adjust as needed */ 
+  word-wrap: break-word;
+}
+
+
+/* ========================================================= */
+/*                    HEADER STYLES                         */
+/* ========================================================= */
+
 .header-container {
   display: flex;
-  align-items: flex-start; /* Align items at the top */
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.header-logo-calculator-container {
+  display: flex;
+  align-items: flex-start; 
   gap: 1rem;
-  box-sizing: border-box;
-  margin: 0 auto 2rem auto;  /* 2rem bottom margin, auto left/right to center */
-  padding: 0rem;
-  width: fit-content;        /* Container only as wide as its contents */
+  margin: 0 auto 0 auto;
+  padding: 0;
+  width: fit-content; 
+}
+
+.tagline h3 {
+  font-style: italic;
+  letter-spacing: 0.1em;
+  font-weight: lighter;
 }
 
 .header-container .ascii-art {
@@ -305,66 +416,26 @@ table tbody tr:hover td:hover {
   margin: 0 0.5rem;
 }
 
-/* Keep the checkbox label on a single line */
-.checkbox-wrapper label {
-  white-space: nowrap; 
-}
-
-.summary-container {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-.summary-totals strong {
-  display: flex;
-  align-items: center;
-  gap: 4rem;
-}
 
 /* ========================================================= */
-/*              Results Header Styles                     */
-/* ========================================================= */
-.results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  flex-direction: column;
-}
-
-/* Optional: If you want the table container to span full width */
-.results-table-wrapper {
-  width: 100%;
-}
-
-
-/* ========================================================= */
-/*                    FOOTER.CSS                        */
+/*                      FOOTER STYLES                        */
 /* ========================================================= */
 
 .site-footer {
-  font-family: 'Libre Bodoni', serif;  /* Use the same font as the title */
-  font-size: 0.9rem;                   /* Much smaller than the title */
+  font-family: 'Libre Bodoni', serif; 
+  font-size: 0.9rem;                  
   text-align: center;
   padding: 1rem 0;
-  color: #4C78D6;                         /* Sophisticated, neutral text color */
-  border-top: 1px solid #4C78D6;          /* A subtle top border */
-  margin-top: 2rem;                    /* Space from the content above */
+  color: #4C78D6;                     
+  border-top: 1px solid #4C78D6;      
+  margin-top: 2rem;                   
 }
 
 .site-footer a {
-  color: #4C78D6;                      /* Link color matching your theme */
+  color: #4C78D6;
   text-decoration: none;
 }
 
 .site-footer a:hover {
   text-decoration: underline;
 }
-
-hr {
-  border: none;
-  border-top: 1.5px solid #4C78D6;
-  margin: 1.5rem 0 1rem;
-}
-

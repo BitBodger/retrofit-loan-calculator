@@ -28,7 +28,7 @@ function Calculator() {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Recalculation function – note that it no longer depends on applyDiscount
+  // Recalculation function
   const recalc = useCallback(() => {
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
@@ -195,53 +195,72 @@ function Calculator() {
             <div className="summary-container">
               <h2>Summary</h2>
               <div className="summary-totals">
-                <strong>
-                  {applyDiscount ? (
-                    <>
-                      <p>
-                        Total Cost: £
-                        {results.total_cost
-                          ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        Total Savings: £
-                        {results.total_savings
-                          ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        Net Savings: £
-                        {results.net_savings
-                          ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                    </> 
-                  ) : (
-                    <>
-                      <p>
-                        Total Cost: £
-                        {results.total_cost
-                          ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        Total Savings: £
-                        {results.total_savings
-                          ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        Net Savings: £
-                        {results.net_savings
-                          ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                          : 'N/A'}
-                      </p>
-                    </>
-                  )}
-                </strong>
+                {applyDiscount ? (
+                  <>
+                    <p>
+                      <strong>Total Cost:</strong> £
+                      {results.total_cost
+                        ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Total Savings:</strong> £
+                      {results.total_savings
+                        ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Net Savings:</strong> £
+                      {results.net_savings
+                        ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Payback Year:</strong>
+                      {results.discounted_payback_time === 0 ? (
+                        <span className="no-payback">
+                          Does not payback within installation lifetime
+                        </span>
+                      ) : (
+                        results.discounted_payback_time
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      <strong>Total Cost:</strong> £
+                      {results.total_cost
+                        ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Total Savings:</strong> £
+                      {results.total_savings
+                        ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Net Savings:</strong> £
+                      {results.net_savings
+                        ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Payback Year:</strong>
+                      {results.payback_time === 0 ? (
+                        <span className="no-payback">
+                          Does not payback within installation lifetime
+                        </span>
+                      ) : (
+                        results.payback_time
+                      )}
+                    </p>
+                  </>
+                )}
               </div>
-            </div>  
+            </div>
+ 
             {results.yearly_details && (
               <div className="results-table-wrapper">
                 <div className="results-header">
