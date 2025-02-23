@@ -204,6 +204,12 @@ function Calculator() {
                         : 'N/A'}
                     </p>
                     <p>
+                      <strong>Total Interest:</strong> £
+                      {results.total_interest
+                        ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
                       <strong>Total Savings:</strong> £
                       {results.total_savings
                         ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
@@ -232,6 +238,12 @@ function Calculator() {
                       <strong>Total Cost:</strong> £
                       {results.total_cost
                         ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Total Interest:</strong> £
+                      {results.total_interest
+                        ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                         : 'N/A'}
                     </p>
                     <p>
