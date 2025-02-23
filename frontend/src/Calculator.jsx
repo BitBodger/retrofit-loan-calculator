@@ -62,7 +62,7 @@ function Calculator() {
   };
 
   return (
-    <div className="page-wrapper">
+    <div>
       <div className="calculator">
       <hr />
         <form onSubmit={handleSubmit}>
@@ -276,7 +276,7 @@ function Calculator() {
             {results.yearly_details && (
               <div className="results-table-wrapper">
                 <div className="results-header">
-                  <h2>Results</h2>
+                  <h1>Savings Forecast</h1>
                   <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
