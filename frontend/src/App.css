@@ -246,13 +246,14 @@ input[type="checkbox"]:checked::after {
   transform: rotate(45deg);
 }
 
-input {
+input, select {
   width: 200px;
-  padding: 0.3rem;
+  padding: 0.2rem;
   border: 1px solid #5f280f;
   border-radius: 4px;
   background-color: #fff9f4;
   color: #5f280f;
+  margin: 0.2rem 0.2rem 0.2rem 0
 }
 
 .tabs {

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
   return (
     <div className="measures-form">
-      <h3>Measures</h3>
       {measures.map((measure, index) => (
         <div key={index} className="measure">
+          <h5>Measure {" " + (index+1)}</h5>
           <select
             type="text"
             name="name"

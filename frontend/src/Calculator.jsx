@@ -6,6 +6,7 @@ import AdvancedForm from './AdvancedForm';
 import ResultsSummary from './ResultsSummary';
 
 function Calculator() {
+  // Main input state for both basic and advanced fields.
   const [inputs, setInputs] = useState({
     installation_cost: '',
     installation_lifetime: '',
@@ -19,22 +20,31 @@ function Calculator() {
     home_size: '',
     existing_heating_system: ''
   });
+
+  // State to control whether discounting is applied.
   const [applyDiscount, setApplyDiscount] = useState(true);
+
+  // Calculation results from the backend.
   const [results, setResults] = useState(null);
+
+  // Controls which advanced/basic tab is active.
   const [activeTab, setActiveTab] = useState("basic");
+
+  // State to manage dynamic measures in the advanced section.
   const [measures, setMeasures] = useState([]);
 
+  // Handler to toggle discounting.
   const handleApplyDiscountChange = (e) => {
     setApplyDiscount(e.target.checked);
   };
 
-  // Handler for basic input changes
+  // Handler for changes in basic input fields.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handlers for measures
+  // Handler for updating individual measure fields.
   const handleMeasureChange = (index, e) => {
     const { name, value } = e.target;
     setMeasures(prevMeasures => {
@@ -44,6 +54,7 @@ function Calculator() {
     });
   };
 
+  // Adds a new measure object to the measures array.
   const addNewMeasure = () => {
     setMeasures(prev => [
       ...prev,
@@ -51,14 +62,14 @@ function Calculator() {
     ]);
   };
 
-  // Calculate the loan amount
+  // Calculate the loan amount from basic inputs.
   const calculatedLoanAmount = (
     parseFloat(inputs.installation_cost || 0) -
     parseFloat(inputs.down_payment || 0) -
     parseFloat(inputs.government_subsidy || 0)
   );
 
-  // Recalculation function
+  // Recalculate the results based on both basic and advanced fields.
   const recalc = useCallback(() => {
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
@@ -87,6 +98,7 @@ function Calculator() {
       .catch(error => console.error('Error making API call:', error));
   }, [inputs, measures]);
 
+  // Handle form submission from the BasicForm.
   const handleSubmit = (e) => {
     e.preventDefault();
     recalc();
@@ -94,17 +106,11 @@ function Calculator() {
 
   return (
     <div className="calculator">
+      {/* Render the tab header */}
       <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-      {activeTab === "basic" && (
-        <BasicForm
-          inputs={inputs}
-          handleChange={handleChange}
-          calculatedLoanAmount={calculatedLoanAmount}
-          handleSubmit={handleSubmit}
-          applyDiscount={applyDiscount}
-          handleApplyDiscountChange={handleApplyDiscountChange}
-        />
-      )}
+
+      {/* Always show BasicForm.
+          If advanced tab is active, render AdvancedForm above BasicForm */}
       {activeTab === "advanced" && (
         <AdvancedForm
           inputs={inputs}
@@ -114,11 +120,23 @@ function Calculator() {
           addNewMeasure={addNewMeasure}
         />
       )}
-      {results && <ResultsSummary
-      results={results}
-      applyDiscount={applyDiscount}
-      handleApplyDiscountChange={handleApplyDiscountChange}
-      />}
+
+      <BasicForm
+        inputs={inputs}
+        handleChange={handleChange}
+        calculatedLoanAmount={calculatedLoanAmount}
+        handleSubmit={handleSubmit}
+        applyDiscount={applyDiscount}
+        handleApplyDiscountChange={handleApplyDiscountChange}
+      />
+
+      {results && (
+        <ResultsSummary
+          results={results}
+          applyDiscount={applyDiscount}
+          handleApplyDiscountChange={handleApplyDiscountChange}
+        />
+      )}
     </div>
   );
 }
