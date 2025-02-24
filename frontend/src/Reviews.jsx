@@ -31,7 +31,7 @@ function Reviews () {
     if (!container) return;
 
     let scrollStep = 1; // pixels to scroll each step
-    const delay = 40;   // delay in ms between steps
+    const delay = 60;   // delay in ms between steps
     const intervalId = setInterval(() => {
       const maxScroll = container.scrollHeight - container.clientHeight;
       if (container.scrollTop >= maxScroll) {

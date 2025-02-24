@@ -260,7 +260,7 @@ input, select {
   display: flex;
   align-items: flex-end; /* Ensures tabs align nicely along the bottom */
   border-bottom: 2px solid #5f280f; /* The 'folder' bottom line */
-  margin-bottom: 1rem;
+  margin: 1rem 0
 }
 
 /* Each tab button */
@@ -456,6 +456,7 @@ table tbody tr:hover td:hover {
   font-style: italic;
   letter-spacing: 0.08em;
   font-weight: 400;
+  margin: 0;
 }
 
 .review-wrapper {
@@ -477,7 +478,7 @@ table tbody tr:hover td:hover {
 /* Outer wrapper for the scrolling reviews */
 .review-scroll-wrapper {
   position: relative;
-  max-height: 260px;   /* Desired visible height */
+  max-height: 250px;   /* Desired visible height */
   overflow: hidden;    /* Prevent the outer wrapper from scrolling */
   background-color: #ffd0ad; /* Must match the container background */
   font-family: 'EB Garamond', serif;
@@ -550,9 +551,14 @@ table tbody tr:hover td:hover {
 .ascii-art {
   font-family: monospace;
   white-space: pre;
-  margin-top: 0;
+  margin: 0;
   padding: 0;
   line-height: 1.1;
+  padding-top: 0.4rem;
+}
+
+.ascii-art p {
+  margin: 0;
 }
 
 .title {
@@ -562,6 +568,10 @@ table tbody tr:hover td:hover {
   padding: 0;
   line-height: 1.2;
   text-align: left;
+}
+
+.title h1 {
+  margin: 0;
 }
 
 .DiscountExplainer {
