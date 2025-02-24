@@ -90,7 +90,7 @@ a:hover {
 
 /* Global button styles */
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.5rem;
   background-color: #ffba85;
   border: 2px solid #5f280f;
   border-radius: 4px;
@@ -99,12 +99,10 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  transition: border-color 0.25s;
 }
 
 button:hover {
   background-color: #ffc69b;
-  transition: 0.2s;
   transition: 0.2s;
 }
 
@@ -269,7 +267,7 @@ input, select {
   border: 1px solid #5f280f;
   border-bottom: none;
   border-radius: 5px 5px 0 0;
-  padding: 0.2rem 1.5rem 0.4rem 0.6rem;
+  padding: 0.3rem 1.5rem 0.4rem 0.6rem;
   margin-right: 0rem;
   font-size: 1rem;
   position: relative;
@@ -287,7 +285,7 @@ input, select {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   font-weight: bold;
-  padding-top: 0.4rem;
+  padding-top: 0.5rem;
   z-index: 2;
 }
 
