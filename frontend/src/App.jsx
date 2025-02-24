@@ -2,7 +2,7 @@ import Calculator from './Calculator.jsx'
 import Header from './Header.jsx'
 import Footer from './Footer.jsx'
 
-function App() {
+export default function App() {
 
   return (
     <div className='page-wrapper'>
@@ -14,4 +14,3 @@ function App() {
 
 }
 
-export default App

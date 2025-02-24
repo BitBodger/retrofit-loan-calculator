@@ -1,5 +1,9 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
+import TabHeader from './TabHeader';
+import BasicForm from './BasicForm';
+import AdvancedForm from './AdvancedForm';
+import ResultsSummary from './ResultsSummary';
 
 function Calculator() {
   const [inputs, setInputs] = useState({
@@ -11,22 +15,48 @@ function Calculator() {
     discount_rate: '3',
     energy_price_escalation: '5',
     down_payment: '',
-    government_subsidy: ''
+    government_subsidy: '',
+    home_size: '',
+    existing_heating_system: ''
   });
-
-  // State to choose whether to apply discounting (for UI display only)
   const [applyDiscount, setApplyDiscount] = useState(true);
   const [results, setResults] = useState(null);
+  const [activeTab, setActiveTab] = useState("basic");
+  const [measures, setMeasures] = useState([]);
 
   const handleApplyDiscountChange = (e) => {
     setApplyDiscount(e.target.checked);
   };
 
-  // Handler for form input changes
+  // Handler for basic input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInputs(prev => ({ ...prev, [name]: value }));
   };
+
+  // Handlers for measures
+  const handleMeasureChange = (index, e) => {
+    const { name, value } = e.target;
+    setMeasures(prevMeasures => {
+      const newMeasures = [...prevMeasures];
+      newMeasures[index] = { ...newMeasures[index], [name]: value };
+      return newMeasures;
+    });
+  };
+
+  const addNewMeasure = () => {
+    setMeasures(prev => [
+      ...prev,
+      { name: '', installation_cost: '', annual_savings: '', lifetime: '' }
+    ]);
+  };
+
+  // Calculate the loan amount
+  const calculatedLoanAmount = (
+    parseFloat(inputs.installation_cost || 0) -
+    parseFloat(inputs.down_payment || 0) -
+    parseFloat(inputs.government_subsidy || 0)
+  );
 
   // Recalculation function
   const recalc = useCallback(() => {
@@ -36,25 +66,26 @@ function Calculator() {
       energy_savings_per_year: parseFloat(inputs.energy_savings_per_year),
       loan_interest_rate: parseFloat(inputs.loan_interest_rate) / 100,
       loan_term: parseInt(inputs.loan_term, 10),
-      // Always send the discount_rate from the inputs
       discount_rate: parseFloat(inputs.discount_rate) / 100,
       energy_price_escalation: parseFloat(inputs.energy_price_escalation) / 100,
       down_payment: parseFloat(inputs.down_payment) || 0,
-      government_subsidy: parseFloat(inputs.government_subsidy) || 0
+      government_subsidy: parseFloat(inputs.government_subsidy) || 0,
+      home_size: inputs.home_size,
+      existing_heating_system: inputs.existing_heating_system,
+      measures: measures.map(measure => ({
+        name: measure.name,
+        installation_cost: parseFloat(measure.installation_cost),
+        repairs_and_enabling_works_cost: parseFloat(measure.repairs_and_enabling_works_cost || 0),
+        annual_savings: parseFloat(measure.annual_savings),
+        lifetime: parseInt(measure.lifetime, 10)
+      }))
     };
 
     axios
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error));
-  }, [inputs]);
-
-  // Calculate the loan amount from the inputs
-  const calculatedLoanAmount = (
-    parseFloat(inputs.installation_cost || 0) -
-    parseFloat(inputs.down_payment || 0) -
-    parseFloat(inputs.government_subsidy || 0)
-  );
+  }, [inputs, measures]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -62,329 +93,32 @@ function Calculator() {
   };
 
   return (
-    <div>
-      <div className="calculator">
-      <hr />
-        <form onSubmit={handleSubmit}>
-          <div className="form-container">
-            {/* Section 1: Installation */}
-            <div className="form-section">
-              <h3>Installation</h3>
-              <div className="form-group">
-                <label>Installation Cost (£):</label>
-                <input
-                  type="number"
-                  name="installation_cost"
-                  value={inputs.installation_cost}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Installation Lifetime (Years):</label>
-                <input
-                  type="number"
-                  name="installation_lifetime"
-                  value={inputs.installation_lifetime}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Energy Savings Per Year (£):</label>
-                <input
-                  type="number"
-                  name="energy_savings_per_year"
-                  value={inputs.energy_savings_per_year}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Section 2: Loan */}
-            <div className="form-section">
-              <h3>Loan</h3>
-              <div className="form-group">
-                <label>Loan Interest Rate %:</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="loan_interest_rate"
-                  value={inputs.loan_interest_rate}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Loan Term (Years):</label>
-                <input
-                  type="number"
-                  name="loan_term"
-                  value={inputs.loan_term}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Loan Amount (£):</label>
-                <input
-                  type="text"
-                  name="loan_amount"
-                  value={calculatedLoanAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Section 3: Economic Conditions */}
-            <div className="form-section">
-              <h3>Economic Conditions</h3>
-              <div className="form-group">
-                <label>Discount Rate %:</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="discount_rate"
-                  value={inputs.discount_rate}
-                  onChange={handleChange}
-                  disabled={!applyDiscount}
-                />
-              </div>
-              <div className="form-group">
-                <label>Energy Price Escalation %:</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="energy_price_escalation"
-                  value={inputs.energy_price_escalation}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Section 4: Upfront Costs */}
-            <div className="form-section">
-              <h3>Upfront Costs</h3>
-              <div className="form-group">
-                <label>Down Payment (£):</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="down_payment"
-                  value={inputs.down_payment}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Government Subsidy (£):</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="government_subsidy"
-                  value={inputs.government_subsidy}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="form-controls">
-            <button type="submit">Calculate</button>
-          </div>
-        </form>
-        
-        {results && <hr />}
-
-        {results && (
-          <div className="results-container">
-            <div className="summary-container">
-              <h2>Summary</h2>
-              <div className="summary-totals">
-                {applyDiscount ? (
-                  <>
-                    <p>
-                      <strong>Total Cost:</strong> £
-                      {results.total_cost
-                        ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Total Interest:</strong> £
-                      {results.total_interest
-                        ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Total Savings:</strong> £
-                      {results.total_savings
-                        ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Net Savings:</strong> £
-                      {results.net_savings
-                        ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Payback Year:</strong>
-                      {results.discounted_payback_time === 0 ? (
-                        <span className="no-payback">
-                          Does not payback within installation lifetime
-                        </span>
-                      ) : (
-                        results.discounted_payback_time
-                      )}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      <strong>Total Cost:</strong> £
-                      {results.total_cost
-                        ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Total Interest:</strong> £
-                      {results.total_interest
-                        ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Total Savings:</strong> £
-                      {results.total_savings
-                        ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Net Savings:</strong> £
-                      {results.net_savings
-                        ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                        : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Payback Year:</strong>
-                      {results.payback_time === 0 ? (
-                        <span className="no-payback">
-                          Does not payback within installation lifetime
-                        </span>
-                      ) : (
-                        results.payback_time
-                      )}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
- 
-            {results.yearly_details && (
-              <div className="results-table-wrapper">
-                <div className="results-header">
-                  <h1>Savings Forecast</h1>
-                  <div className="checkbox-wrapper">
-                    <input
-                      type="checkbox"
-                      name="apply_discount"
-                      checked={applyDiscount}
-                      onChange={handleApplyDiscountChange}
-                    />
-                    <label>Apply Discounting: <text className="DiscountExplainer">Discounting converts future cash flows into their present-day value, accounting for the time value of money.</text></label>
-                  </div>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Year</th>
-                      <th>Annual Loan Payment</th>
-                      <th>Remaining Loan Balance</th>
-                      <th>Interest Portion</th>
-                      <th>Principal Portion</th>
-                      <th>Annual Energy Savings</th>
-                      {applyDiscount ? (
-                        <>
-                          <th>Discounted Net Cash Flow</th>
-                          <th>Discounted Cumulative Cash Flow</th>
-                        </>
-                      ) : (
-                        <>
-                          <th>Net Cash Flow</th>
-                          <th>Cumulative Net Cash Flow</th>
-                        </>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.yearly_details.map((detail, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td>{detail.year}</td>
-                        <td>
-                          £
-                          {detail.annual_loan_payment.toLocaleString('en-GB', {
-                            minimumFractionDigits: 2
-                          })}
-                        </td>
-                        <td>
-                          £
-                          {Math.abs(detail.remaining_loan_balance) < 0.01
-                            ? '0.00'
-                            : detail.remaining_loan_balance.toLocaleString('en-GB', {
-                                minimumFractionDigits: 2
-                              })}
-                        </td>
-                        <td>
-                          £
-                          {detail.interest_portion.toLocaleString('en-GB', {
-                            minimumFractionDigits: 2
-                          })}
-                        </td>
-                        <td>
-                          £
-                          {detail.principal_portion.toLocaleString('en-GB', {
-                            minimumFractionDigits: 2
-                          })}
-                        </td>
-                        <td>
-                          £
-                          {detail.annual_energy_savings.toLocaleString('en-GB', {
-                            minimumFractionDigits: 2
-                          })}
-                        </td>
-                        {applyDiscount ? (
-                          <>
-                            <td>
-                              £
-                              {detail.discounted_net_cash_flow.toLocaleString('en-GB', {
-                                minimumFractionDigits: 2
-                              })}
-                            </td>
-                            <td>
-                              £
-                              {detail.discounted_cumulative_net_cash_flow.toLocaleString('en-GB', {
-                                minimumFractionDigits: 2
-                              })}
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td>
-                              £
-                              {detail.net_cash_flow.toLocaleString('en-GB', {
-                                minimumFractionDigits: 2
-                              })}
-                            </td>
-                            <td>
-                              £
-                              {detail.cumulative_net_cash_flow.toLocaleString('en-GB', {
-                                minimumFractionDigits: 2
-                              })}
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+    <div className="calculator">
+      <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      {activeTab === "basic" && (
+        <BasicForm
+          inputs={inputs}
+          handleChange={handleChange}
+          calculatedLoanAmount={calculatedLoanAmount}
+          handleSubmit={handleSubmit}
+          applyDiscount={applyDiscount}
+          handleApplyDiscountChange={handleApplyDiscountChange}
+        />
+      )}
+      {activeTab === "advanced" && (
+        <AdvancedForm
+          inputs={inputs}
+          handleChange={handleChange}
+          measures={measures}
+          handleMeasureChange={handleMeasureChange}
+          addNewMeasure={addNewMeasure}
+        />
+      )}
+      {results && <ResultsSummary
+      results={results}
+      applyDiscount={applyDiscount}
+      handleApplyDiscountChange={handleApplyDiscountChange}
+      />}
     </div>
   );
 }
