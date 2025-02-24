@@ -26,7 +26,7 @@
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  color: #4C78D6;
+  color: #5f280f;
   background-color: #ffd0ad;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -90,15 +90,22 @@ a:hover {
 
 /* Global button styles */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.5rem 1rem;
+  background-color: #ffba85;
+  border: 2px solid #5f280f;
+  border-radius: 4px;
+  color: #5f280f;
+  cursor: pointer;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #4C78D6;
-  cursor: pointer;
   transition: border-color 0.25s;
+}
+
+button:hover {
+  background-color: #ffc69b;
+  transition: 0.2s;
+  transition: 0.2s;
 }
 
 button:focus,
@@ -123,7 +130,7 @@ button:focus-visible {
 /* Horizontal rule */
 hr {
   border: none;
-  border-top: 1.5px solid #4C78D6;
+  border-top: 1.5px solid #5f280f;
   margin: 1.5rem 0 1rem;
 }
 
@@ -221,7 +228,7 @@ label {
   -webkit-appearance: none; /* Remove default styling in WebKit browsers */
   -moz-appearance: none;    /* Remove default styling in Firefox */
   appearance: none;         /* Remove default styling */
-  border: 1.5px solid #4C78D6; /* Blue border */
+  border: 1.5px solid #5f280f; /* Blue border */
   background-color: #ffd0ad;   /* Pink background */
   cursor: pointer;
   position: relative;
@@ -234,7 +241,7 @@ input[type="checkbox"]:checked::after {
   left: 9px;
   width: 4px;
   height: 16px;
-  border: 1px solid #4C78D6;
+  border: 1px solid #5f280f;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -242,26 +249,67 @@ input[type="checkbox"]:checked::after {
 input {
   width: 200px;
   padding: 0.3rem;
-  border: 1px solid #4C78D6;
+  border: 1px solid #5f280f;
   border-radius: 4px;
   background-color: #fff9f4;
-  color: #4C78D6;
+  color: #5f280f;
 }
 
-/* Override the global button styles specifically for the calculator */
-button {
-  padding: 0.5rem 1rem;
-  background-color: #4C78D6;
-  border: none;
-  border-radius: 4px;
-  color: #ffffff;
+.tabs {
+  display: flex;
+  align-items: flex-end; /* Ensures tabs align nicely along the bottom */
+  border-bottom: 2px solid #5f280f; /* The 'folder' bottom line */
+  margin-bottom: 1rem;
+}
+
+/* Each tab button */
+.tabs button {
+  background-color: #ffc69b;
+  border: 1px solid #5f280f;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  padding: 0.2rem 1.5rem 0.4rem 0.6rem;
+  margin-right: 0rem;
+  font-size: 1rem;
+  position: relative;
   cursor: pointer;
+  transition: all 0.5s ease;
+  color: #5f280f;
 }
 
-button:hover {
-  background-color: #5e89e7;
+/* Active tab has a visible border and merges seamlessly with the bottom line */
+.tabs button.active {
+  background-color: #ffba85;
+  border: 3px solid #5f280f;
+  border-left: 1px solid;
+  border-bottom: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-weight: bold;
+  padding-top: 0.4rem;
+  z-index: 2;
 }
 
+/* Dot to the right of the tab text */
+.tabs button::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #5f280f;
+  position: absolute;
+  top: 20%;
+  right: 0.3rem;
+}
+
+.tabs button[data-dot="advanced"]::after {
+  background-color: red;
+}
+
+.tabs button[data-dot="basic"]::after {
+  background-color: green;
+}
 
 /* ========================================================= */
 /*                   TABLE & RESULTS STYLES                 */
@@ -277,7 +325,7 @@ table {
 table th {
   padding: 4px;
   text-align: center;
-  border: 1px solid #4C78D6;
+  border: 1px solid #5f280f;
   transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
   height: 85px;
   background-color: #ffc498;
@@ -286,27 +334,30 @@ table th {
 table td {
   padding: 2px;
   text-align: center;
-  border: 1px solid #4C78D6;
+  border: 1px solid #5f280f;
   transition: border 0.15s ease, color 0.15s ease, background-color 0.15s ease;
   background-color: #ffdbc0;
 }
 
 /* Row hover styling */
 table tbody tr:hover td {
-  background-color: #4C78D6;
+  background-color: #5f280f;
   color: #ffd0ad;
   border-top: 1px solid #ffd0ad;
   border-bottom: 1px solid #ffd0ad;
   border-left: 1px solid #ffd0ad;
   border-right: 1px solid #ffd0ad;
+  transition: 0.5s;
 }
 
 /* Fix first & last cell borders on hover */
 table tbody tr:hover td:first-child {
-  border-left: 1px solid #4C78D6;
+  border-left: 1px solid #5f280f;
+  transition: 0.5s;
 }
 table tbody tr:hover td:last-child {
-  border-right: 1px solid #4C78D6;
+  border-right: 1px solid #5f280f;
+  transition: 0.5s;
 }
 
 /* Bold text on hovered cell */
@@ -481,7 +532,7 @@ table tbody tr:hover td:hover {
 /* Optional: separator styling between reviews */
 .review-separator {
   border: none;
-  border-top: 1px dashed #4C78D6;
+  border-top: 1px dashed #5f280f;
   margin: 1rem 0;
 }
 
@@ -529,13 +580,13 @@ table tbody tr:hover td:hover {
   font-size: 0.9rem;                  
   text-align: center;
   padding: 1rem 0;
-  color: #4C78D6;                     
-  border-top: 1px solid #4C78D6;      
+  color: #5f280f;                     
+  border-top: 1px solid #5f280f;      
   margin-top: 2rem;                   
 }
 
 .site-footer a {
-  color: #4C78D6;
+  color: #5f280f;
   text-decoration: none;
 }
 

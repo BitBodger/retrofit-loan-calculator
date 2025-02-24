@@ -4,12 +4,14 @@ function TabHeader({ activeTab, setActiveTab }) {
   return (
     <div className="tabs">
       <button 
+        data-dot="basic"
         onClick={() => setActiveTab("basic")} 
         className={activeTab === "basic" ? "active" : ""}
       >
         Basic
       </button>
       <button 
+        data-dot="advanced"
         onClick={() => setActiveTab("advanced")} 
         className={activeTab === "advanced" ? "active" : ""}
       >
