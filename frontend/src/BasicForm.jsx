@@ -1,6 +1,14 @@
 import PropTypes from 'prop-types';
+import CurrencyInput from 'react-currency-input-field';
+import { NumericFormat } from 'react-number-format';
 
-function BasicForm({ inputs, handleChange, calculatedLoanAmount, handleSubmit, applyDiscount }) {
+function BasicForm({ 
+  inputs, 
+  handleChange, 
+  calculatedLoanAmount, 
+  handleSubmit, 
+  applyDiscount
+}) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="basic-form-container">
@@ -8,30 +16,45 @@ function BasicForm({ inputs, handleChange, calculatedLoanAmount, handleSubmit, a
         <div className="form-section">
           <h3>Installation</h3>
           <div className="form-group">
-            <label>Installation Cost (£):</label>
-            <input
-              type="number"
+            <label>Installation Cost</label>
+            <CurrencyInput
+              id="installation_cost"
               name="installation_cost"
+              placeholder="£0.00"
               value={inputs.installation_cost}
-              onChange={handleChange}
+              decimalsLimit={2}
+              prefix="£"
+              onValueChange={(value) =>
+                handleChange({ target: { name: 'installation_cost', value } })
+              }
             />
           </div>
           <div className="form-group">
-            <label>Installation Lifetime (Years):</label>
-            <input
-              type="number"
-              name="installation_lifetime"
+            <label>Installation Lifetime</label>
+            <NumericFormat
               value={inputs.installation_lifetime}
-              onChange={handleChange}
+              displayType={'input'}
+              suffix={' years'}
+              placeholder='0 years'
+              decimalScale={0}
+              onValueChange={(values) => {
+                const { value } = values;
+                handleChange({ target: { name: 'installation_lifetime', value } });
+              }}
             />
           </div>
           <div className="form-group">
-            <label>Energy Savings Per Year (£):</label>
-            <input
-              type="number"
+            <label>Energy Savings Per Year</label>
+            <CurrencyInput
+              id="energy_savings_per_year"
               name="energy_savings_per_year"
+              placeholder="£0.00"
               value={inputs.energy_savings_per_year}
-              onChange={handleChange}
+              decimalsLimit={2}
+              prefix="£"
+              onValueChange={(value) =>
+                handleChange({ target: { name: 'energy_savings_per_year', value } })
+              }
             />
           </div>
         </div>
@@ -40,30 +63,40 @@ function BasicForm({ inputs, handleChange, calculatedLoanAmount, handleSubmit, a
         <div className="form-section">
           <h3>Loan</h3>
           <div className="form-group">
-            <label>Loan Interest Rate (%):</label>
-            <input
-              type="number"
-              step="0.1"
-              name="loan_interest_rate"
+            <label>Loan Interest Rate</label>
+            <NumericFormat
               value={inputs.loan_interest_rate}
-              onChange={handleChange}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) => {
+                const { value } = values;
+                handleChange({ target: { name: 'loan_interest_rate', value } });
+              }}
             />
           </div>
           <div className="form-group">
-            <label>Loan Term (Years):</label>
-            <input
-              type="number"
-              name="loan_term"
+            <label>Loan Term</label>
+            <NumericFormat
               value={inputs.loan_term}
-              onChange={handleChange}
+              displayType={'input'}
+              suffix={' years'}
+              decimalScale={0}
+              onValueChange={(values) => {
+                const { value } = values;
+                handleChange({ target: { name: 'loan_term', value } });
+              }}
             />
           </div>
           <div className="form-group">
-            <label>Loan Amount (£):</label>
-            <input
-              type="text"
+            <label>Loan Amount</label>
+            <CurrencyInput
+              id="loan_amount"
               name="loan_amount"
-              value={calculatedLoanAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              value={calculatedLoanAmount.toFixed(2)}
+              decimalsLimit={2}
+              prefix="£"
               readOnly
             />
           </div>
@@ -73,24 +106,32 @@ function BasicForm({ inputs, handleChange, calculatedLoanAmount, handleSubmit, a
         <div className="form-section">
           <h3>Economic Conditions</h3>
           <div className="form-group">
-            <label>Discount Rate (%):</label>
-            <input
-              type="number"
-              step="0.1"
-              name="discount_rate"
+            <label>Discount Rate</label>
+            <NumericFormat
               value={inputs.discount_rate}
-              onChange={handleChange}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) => {
+                const { value } = values;
+                handleChange({ target: { name: 'discount_rate', value } });
+              }}
               disabled={!applyDiscount}
             />
           </div>
           <div className="form-group">
-            <label>Energy Price Escalation (%):</label>
-            <input
-              type="number"
-              step="0.1"
-              name="energy_price_escalation"
+            <label>Energy Price Escalation</label>
+            <NumericFormat
               value={inputs.energy_price_escalation}
-              onChange={handleChange}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) => {
+                const { value } = values;
+                handleChange({ target: { name: 'energy_price_escalation', value } });
+              }}
             />
           </div>
         </div>
@@ -99,23 +140,31 @@ function BasicForm({ inputs, handleChange, calculatedLoanAmount, handleSubmit, a
         <div className="form-section">
           <h3>Upfront Costs</h3>
           <div className="form-group">
-            <label>Down Payment (£):</label>
-            <input
-              type="number"
-              step="0.01"
+            <label>Down Payment</label>
+            <CurrencyInput
+              id="down_payment"
               name="down_payment"
+              placeholder="£0.00"
               value={inputs.down_payment}
-              onChange={handleChange}
+              decimalsLimit={2}
+              prefix="£"
+              onValueChange={(value) =>
+                handleChange({ target: { name: 'down_payment', value } })
+              }
             />
           </div>
           <div className="form-group">
-            <label>Government Subsidy (£):</label>
-            <input
-              type="number"
-              step="0.01"
+            <label>Government Subsidy</label>
+            <CurrencyInput
+              id="government_subsidy"
               name="government_subsidy"
+              placeholder="£0.00"
               value={inputs.government_subsidy}
-              onChange={handleChange}
+              decimalsLimit={2}
+              prefix="£"
+              onValueChange={(value) =>
+                handleChange({ target: { name: 'government_subsidy', value } })
+              }
             />
           </div>
         </div>
@@ -147,6 +196,5 @@ BasicForm.propTypes = {
   applyDiscount: PropTypes.bool.isRequired,
   handleApplyDiscountChange: PropTypes.func.isRequired,
 };
-
 
 export default BasicForm;

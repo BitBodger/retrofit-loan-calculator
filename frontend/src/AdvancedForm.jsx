@@ -4,11 +4,10 @@ import MeasuresForm from './MeasuresForm';
 function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, addNewMeasure }) {
   return (
     <div className="advanced-form-container">
-      {/* Advanced Options Section */}
-      <div className="form-section">
-        <h3>Advanced Options</h3>
+      <div className="your-home-section">
+        <h3>Your Home</h3>
         <div className="form-group">
-          <label>Existing Heating System:</label>
+          <label>Existing Heating System</label>
           <select
             name="existing_heating_system"
             value={inputs.existing_heating_system}
@@ -30,7 +29,7 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
           </select>
         </div>
         <div className="form-group">
-          <label>Home Size:</label>
+          <label>Home Size</label>
           <select
             name="home_size"
             value={inputs.home_size}
@@ -43,9 +42,7 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
           </select>
         </div>
       </div>
-
-      {/* Measures Section */}
-      <div className="form-section">
+      <div className="measures-section">
         <h3>Measures</h3>
         <MeasuresForm 
           measures={measures} 

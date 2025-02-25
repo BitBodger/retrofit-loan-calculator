@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
+import CurrencyInput from 'react-currency-input-field';
 
 function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
   return (
     <div className="measures-form">
       {measures.map((measure, index) => (
         <div key={index} className="measure">
-          <h5>Measure {" " + (index+1)}</h5>
+          <label>Measure {index + 1}</label>
           <select
-            type="text"
             name="name"
-            placeholder="Measure Name"
             value={measure.name}
             onChange={(e) => handleMeasureChange(index, e)}
           >
@@ -18,27 +17,35 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             <option value="cavity_wall_insulation">Cavity Wall Insulation</option>
             <option value="solid_wall_insulation">Solid Wall Insulation</option>
             <option value="draught_proofing">Draught Proofing</option>
-            <option value="double_glazing">Double Glazing</option>
-            <option value="triple_glazing">Triple Glazing</option>
-            <option value="high_efficiency_boiler">High-Efficiency Boiler</option>
-            <option value="heating_controls">Heating Controls</option>
             <option value="heat_pump">Heat Pump</option>
             <option value="solar_pv">Solar PV</option>
+            <option value="double_glazing">Double Glazing</option>
+            <option value="triple_glazing">Triple Glazing</option>
+            <option value="heating_controls">Heating Controls</option>
+            <option value="high_efficiency_boiler">High-Efficiency Boiler</option>
           </select>
 
-          <input
-            type="number"
+          <CurrencyInput
+            id={`installation_cost_${index}`}
             name="installation_cost"
             placeholder="Installation Cost (£)"
             value={measure.installation_cost}
-            onChange={(e) => handleMeasureChange(index, e)}
+            decimalsLimit={2}
+            prefix="£"
+            onValueChange={(value) =>
+              handleMeasureChange(index, { target: { name: 'installation_cost', value } })
+            }
           />
-          <input
-            type="number"
+          <CurrencyInput
+            id={`annual_savings_${index}`}
             name="annual_savings"
             placeholder="Annual Savings (£)"
             value={measure.annual_savings}
-            onChange={(e) => handleMeasureChange(index, e)}
+            decimalsLimit={2}
+            prefix="£"
+            onValueChange={(value) =>
+              handleMeasureChange(index, { target: { name: 'annual_savings', value } })
+            }
           />
           <input
             type="number"

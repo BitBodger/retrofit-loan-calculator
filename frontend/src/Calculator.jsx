@@ -4,6 +4,7 @@ import TabHeader from './TabHeader';
 import BasicForm from './BasicForm';
 import AdvancedForm from './AdvancedForm';
 import ResultsSummary from './ResultsSummary';
+import measureDefaults from './measureDefaults';
 
 function Calculator() {
   // Main input state for both basic and advanced fields.
@@ -44,12 +45,24 @@ function Calculator() {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handler for updating individual measure fields.
   const handleMeasureChange = (index, e) => {
     const { name, value } = e.target;
     setMeasures(prevMeasures => {
       const newMeasures = [...prevMeasures];
-      newMeasures[index] = { ...newMeasures[index], [name]: value };
+      if (name === "name") {
+        // Merge in default values based on the selected measure.
+        const defaults = measureDefaults[value] || {};
+        newMeasures[index] = { 
+          ...newMeasures[index],
+          name: value,
+          ...defaults,
+        };
+      } else {
+        newMeasures[index] = { 
+          ...newMeasures[index],
+          [name]: value,
+        };
+      }
       return newMeasures;
     });
   };

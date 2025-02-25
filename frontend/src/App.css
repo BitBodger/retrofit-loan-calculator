@@ -160,21 +160,71 @@ hr {
 /*                  CALCULATOR & FORM STYLES                */
 /* ========================================================= */
 
+.measures-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.measures-form button {
+  height: 2.5rem;
+  width: 8rem;
+  box-sizing: border-box;
+}
+
 .calculator {
   min-width: 1000px;
   max-width: 1000px;
   margin: 0 auto;
 }
 
-.basic-form-container, .advanced-form-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+.basic-form-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   max-width: 1000px;
-  margin: 0 auto; /* centre horizontally */
-  padding: 0;
+  margin: 0 auto;
   padding-bottom: 1rem;
+}
+
+.advanced-form-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 0 auto 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #5f280f;
+  align-items: start;
+}
+
+.your-home-section {
+  grid-column: 1 / 2;
+}
+
+.measures-section {
+  grid-column: 2 / 5;
+}
+
+.measure {
+  align-self: start; /* For grid items or flex items */
+}
+
+.measures-form {
+  align-items: flex-start;
+}
+
+.your-home-section,
+.measures-section {
+  margin-top: 0;
+  padding-top: 0;
+  align-self: start; /* Extra safety for individual items */
+}
+
+.your-home-section h3,
+.measures-section h3 {
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
 }
 
 .form-section {
@@ -191,14 +241,16 @@ hr {
 
 /* Form groups & labels */
 .form-group {
-  display: flex;
+  display: block;
   flex-direction: column;
   margin-bottom: 0.75rem;
 }
 
 label {
-  margin-bottom: 0.25rem;
   font-weight: bold;
+  font-size: 0.9em;
+  padding: 0;
+  margin: 0;
 }
 
 /* Form controls (buttons, checkboxes, etc.) */
@@ -251,7 +303,7 @@ input, select {
   border-radius: 4px;
   background-color: #fff9f4;
   color: #5f280f;
-  margin: 0.2rem 0.2rem 0.2rem 0
+  margin: 0.2rem 0;
 }
 
 .tabs {
