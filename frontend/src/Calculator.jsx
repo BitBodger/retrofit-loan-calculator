@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import TabHeader from './TabHeader';
 import BasicForm from './BasicForm';
@@ -74,6 +74,30 @@ function Calculator() {
       { name: '', installation_cost: '', annual_savings: '', lifetime: '' }
     ]);
   };
+
+  useEffect(() => {
+    if (measures.length > 0) {
+      const derivedInstallationCost = measures.reduce(
+        (sum, measure) => sum + parseFloat(measure.installation_cost || 0),
+        0
+      );
+      const derivedEnergySavings = measures.reduce(
+        (sum, measure) => sum + parseFloat(measure.annual_savings || 0),
+        0
+      );
+      const derivedInstallationLifetime = measures.reduce(
+        (max, measure) => Math.max(max, parseInt(measure.lifetime || 0, 10)),
+        0
+      );
+  
+      setInputs(prev => ({
+        ...prev,
+        installation_cost: derivedInstallationCost.toString(),
+        energy_savings_per_year: derivedEnergySavings.toString(),
+        installation_lifetime: derivedInstallationLifetime.toString(),
+      }));
+    }
+  }, [measures]);
 
   // Calculate the loan amount from basic inputs.
   const calculatedLoanAmount = (

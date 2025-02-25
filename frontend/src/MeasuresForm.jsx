@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import CurrencyInput from 'react-currency-input-field';
+import { NumericFormat } from 'react-number-format';
 
 function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
   return (
@@ -28,7 +29,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
           <CurrencyInput
             id={`installation_cost_${index}`}
             name="installation_cost"
-            placeholder="Installation Cost (£)"
+            placeholder="Installation Cost"
             value={measure.installation_cost}
             decimalsLimit={2}
             prefix="£"
@@ -36,10 +37,11 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
               handleMeasureChange(index, { target: { name: 'installation_cost', value } })
             }
           />
+
           <CurrencyInput
             id={`annual_savings_${index}`}
             name="annual_savings"
-            placeholder="Annual Savings (£)"
+            placeholder="Annual Savings"
             value={measure.annual_savings}
             decimalsLimit={2}
             prefix="£"
@@ -47,12 +49,17 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
               handleMeasureChange(index, { target: { name: 'annual_savings', value } })
             }
           />
-          <input
-            type="number"
-            name="lifetime"
-            placeholder="Measure Lifetime (Years)"
+
+          <NumericFormat
             value={measure.lifetime}
-            onChange={(e) => handleMeasureChange(index, e)}
+            displayType={'input'}
+            placeholder="Measure lifetime"
+            suffix={' years'}
+            decimalScale={0}
+            onValueChange={(values) => {
+              const { value } = values;
+              handleMeasureChange(index, { target: { name: 'lifetime', value } });
+            }}
           />
         </div>
       ))}
@@ -67,7 +74,7 @@ MeasuresForm.propTypes = {
       name: PropTypes.string,
       installation_cost: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       annual_savings: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      lifetime: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      lifetime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     })
   ).isRequired,
   handleMeasureChange: PropTypes.func.isRequired,

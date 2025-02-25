@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import Optional, List
 
 app = FastAPI()
 
@@ -35,6 +35,7 @@ class CalculationRequest(BaseModel):
     energy_price_escalation: float
     down_payment: float
     government_subsidy: float
+    measures: Optional[List[Measure]] = None
 
 class YearlyCashFlow(BaseModel):
     year: int
@@ -129,41 +130,45 @@ async def calculate(request: CalculationRequest):
         annual_interest = 0.0
         annual_principal = 0.0
 
-        # Process each month within the current year.
         for m in range(1, 13):
             current_month += 1
             if current_month <= total_months:
-                # Calculate the interest payment for the current month.
                 interest_payment = remaining_balance * monthly_rate
-                # Determine the principal payment (difference between fixed payment and interest).
                 principal_payment = monthly_payment - interest_payment
-
-                # Update the remaining balance.
                 remaining_balance -= principal_payment
-                # Prevent the remaining balance from going negative due to rounding errors.
                 remaining_balance = max(0, remaining_balance)
-
-                # Aggregate monthly values into annual totals.
                 annual_loan_payment += monthly_payment
                 annual_interest += interest_payment
                 annual_principal += principal_payment
             else:
                 break
 
-        # Calculate annual energy savings with escalation applied (year 1 uses the base value).
-        annual_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
-        # Compute the net cash flow for the year: savings minus the loan payments.
+        # Base energy savings using the global base rate.
+        base_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
+
+        # Sum energy savings from measures that are still active this year.
+        measure_energy_savings = 0.0
+        if request.measures:
+            for measure in request.measures:
+                if year <= measure.lifetime:
+                    measure_energy_savings += measure.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
+            annual_energy_savings = base_energy_savings + measure_energy_savings
+            # Apply combined savings bonus if specific combinations exist.
+            selected_measure_names = [m.name.lower() for m in request.measures]
+            combined_savings_bonus = 0.0
+            if "solar_pv" in selected_measure_names and "heat_pump" in selected_measure_names:
+                combined_savings_bonus = 0.05 * measure_energy_savings  # 5% bonus, for example.
+            annual_energy_savings += combined_savings_bonus
+        else:
+            annual_energy_savings = base_energy_savings
+
         net_cash_flow = annual_energy_savings - annual_loan_payment
-        # Determine the discount factor for the current year.
         discount_factor = 1 / ((1 + request.discount_rate) ** year)
-        # Apply the discount factor to the net cash flow.
         discounted_net_cash_flow = net_cash_flow * discount_factor
 
-        # Update cumulative cash flows.
         cumulative_net_cash_flow += net_cash_flow
         discounted_cumulative_net_cash_flow += discounted_net_cash_flow
 
-        # Accumulate summary totals.
         total_energy_savings += annual_energy_savings
         total_loan_payments += annual_loan_payment
         total_interest += annual_interest
@@ -171,13 +176,11 @@ async def calculate(request: CalculationRequest):
         total_discounted_energy_savings += annual_energy_savings * discount_factor
         total_discounted_loan_payments += annual_loan_payment * discount_factor
 
-        # Determine the payback time (year when cumulative cash flow becomes non-negative).
         if cumulative_net_cash_flow >= 0 and payback_time == 0:
             payback_time = year
         if discounted_cumulative_net_cash_flow >= 0 and discounted_payback_time == 0:
             discounted_payback_time = year
 
-        # Record the detailed cash flow for the current year.
         yearly_detail = YearlyCashFlow(
             year=year,
             annual_loan_payment=round(annual_loan_payment, 2),
@@ -192,6 +195,7 @@ async def calculate(request: CalculationRequest):
             discounted_cumulative_net_cash_flow=round(discounted_cumulative_net_cash_flow, 2)
         )
         yearly_details.append(yearly_detail)
+
 
     # ----------------------------------
     # Summary Totals Calculations
