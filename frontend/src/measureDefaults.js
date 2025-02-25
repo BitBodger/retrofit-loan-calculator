@@ -41,8 +41,19 @@ const measureDefaults = {
   },
   heat_pump: {
     installation_cost: "14000",
-    annual_savings: "280",
+    annual_savings: "290",
     lifetime: "20",
+    existingSystems: {
+      old_gas_boiler: 290,
+      new_gas_boiler: -3,
+      old_oil_boiler: 280,
+      new_oil_boiler: -55,
+      old_lpg_boiler: 650,
+      new_lpg_boiler: 260,
+      old_electric_storage_heaters: 1200,
+      new_electric_storage_heaters: 700,
+      coal: 650
+    }
   },
   solar_pv: {
     installation_cost: "7000",

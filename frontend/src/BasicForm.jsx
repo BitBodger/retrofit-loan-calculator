@@ -7,7 +7,8 @@ function BasicForm({
   handleChange, 
   calculatedLoanAmount, 
   handleSubmit, 
-  applyDiscount
+  applyDiscount,
+  advancedActive
 }) {
   return (
     <form onSubmit={handleSubmit}>
@@ -23,10 +24,13 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.installation_cost}
               decimalsLimit={2}
+              fixedDecimalLength={2}
               prefix="£"
-              onValueChange={(value) =>
-                handleChange({ target: { name: 'installation_cost', value } })
-              }
+              onValueChange={(value) => {
+                const formattedValue = parseFloat(value).toFixed(2);
+                handleChange({ target: { name: 'installation_cost', formattedValue } })
+              }}
+              readOnly={advancedActive}
             />
           </div>
           <div className="form-group">
@@ -41,6 +45,7 @@ function BasicForm({
                 const { value } = values;
                 handleChange({ target: { name: 'installation_lifetime', value } });
               }}
+              readOnly={advancedActive}
             />
           </div>
           <div className="form-group">
@@ -51,10 +56,13 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.energy_savings_per_year}
               decimalsLimit={2}
+              fixedDecimalLength={2}
               prefix="£"
-              onValueChange={(value) =>
-                handleChange({ target: { name: 'energy_savings_per_year', value } })
-              }
+              onValueChange={(value) => {
+                const formattedValue = parseFloat(value).toFixed(2);
+                handleChange({ target: { name: 'energy_savings_per_year', formattedValue } })
+              }}
+              readOnly={advancedActive}
             />
           </div>
         </div>
@@ -195,6 +203,7 @@ BasicForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   applyDiscount: PropTypes.bool.isRequired,
   handleApplyDiscountChange: PropTypes.func.isRequired,
+  advancedActive: PropTypes.bool.isRequired,
 };
 
 export default BasicForm;

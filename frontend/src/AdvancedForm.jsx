@@ -13,10 +13,6 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
             value={inputs.existing_heating_system}
             onChange={handleChange}
           >
-            <option value="">Select your system</option>
-            <option value="inefficient_boiler">Inefficient Boiler</option>
-            <option value="efficient_boiler">Efficient Boiler</option>
-            <option value="electric_heating">Electric Heating</option>
             <option value="old_gas_boiler">Old Gas Boiler</option>
             <option value="new_gas_boiler">New Gas Boiler</option>
             <option value="old_oil_boiler">Old Oil Boiler</option>
@@ -35,7 +31,6 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
             value={inputs.home_size}
             onChange={handleChange}
           >
-            <option value="">Select home size</option>
             <option value="small">Small</option>
             <option value="medium">Medium</option>
             <option value="large">Large</option>

@@ -35,6 +35,7 @@ class CalculationRequest(BaseModel):
     energy_price_escalation: float
     down_payment: float
     government_subsidy: float
+    use_advanced_form: bool
     measures: Optional[List[Measure]] = None
 
 class YearlyCashFlow(BaseModel):
@@ -148,17 +149,40 @@ async def calculate(request: CalculationRequest):
 
         # Sum energy savings from measures that are still active this year.
         measure_energy_savings = 0.0
-        if request.measures:
+        if request.use_advanced_form and request.measures:
             for measure in request.measures:
                 if year <= measure.lifetime:
                     measure_energy_savings += measure.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
-            annual_energy_savings = base_energy_savings + measure_energy_savings
+            annual_energy_savings = measure_energy_savings
             # Apply combined savings bonus if specific combinations exist.
             selected_measure_names = [m.name.lower() for m in request.measures]
+            
+            # Assume that measure_energy_savings is already the sum of all active measure savings.
+            # We'll compute additional bonus savings based only on the measures in each combo.
             combined_savings_bonus = 0.0
-            if "solar_pv" in selected_measure_names and "heat_pump" in selected_measure_names:
-                combined_savings_bonus = 0.05 * measure_energy_savings  # 5% bonus, for example.
-            annual_energy_savings += combined_savings_bonus
+
+            # Define your combo rules:
+            combo_definitions = {
+                ('solar_pv', 'heat_pump'): 0.1,
+                ('solar_pv', 'battery'): 0.1,
+            }
+
+            # For each combo, check if all required measures are present and active for this year.
+            for combo, bonus_pct in combo_definitions.items():
+                # Check if all measures in the combo are active in the current year.
+                if all(any(m.name.lower() == measure and year <= m.lifetime for m in request.measures) for measure in combo):
+                    # Sum savings only from the measures in the combo.
+                    combo_savings = sum(
+                        m.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
+                        for m in request.measures 
+                        if m.name.lower() in combo and year <= m.lifetime
+                    )
+                    combined_savings_bonus += bonus_pct * combo_savings
+
+            # Apply the bonus only to the savings from the measures, not the base savings.
+            annual_energy_savings = measure_energy_savings + combined_savings_bonus
+
+
         else:
             annual_energy_savings = base_energy_savings
 

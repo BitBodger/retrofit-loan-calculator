@@ -32,6 +32,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             placeholder="Installation Cost"
             value={measure.installation_cost}
             decimalsLimit={2}
+            fixedDecimalLength={2}
             prefix="£"
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'installation_cost', value } })
@@ -44,6 +45,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             placeholder="Annual Savings"
             value={measure.annual_savings}
             decimalsLimit={2}
+            fixedDecimalLength={2}
             prefix="£"
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'annual_savings', value } })

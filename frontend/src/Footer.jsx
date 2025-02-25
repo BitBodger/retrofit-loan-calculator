@@ -8,6 +8,10 @@ function Footer() {
           Plymouth Energy Community
         </a>
       </p>
+      <p>
+        I would love to know if you found this calculator useful or not. 
+        Please send reviews to <a href="mailto:bitbodger@proton.me">bitbodger@proton.me</a>
+      </p>
     </footer>
 
   )
