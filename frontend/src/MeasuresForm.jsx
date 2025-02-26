@@ -39,13 +39,13 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             <option value="high_efficiency_boiler">High-Efficiency Boiler</option>
           </select>
 
+          <label className="small-label">Installation cost</label>
           <CurrencyInput
             id={`installation_cost_${index}`}
             name="installation_cost"
             placeholder="Installation Cost"
             value={measure.installation_cost}
             decimalsLimit={2}            // Maximum of 2 decimal digits
-            allowTrailingZeros={true}    // Keep trailing zeros if typed
             prefix="£"
             // Update measure state on every change with raw value
             onValueChange={(value) =>
@@ -55,13 +55,13 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             onBlur={forceTwoDecimalsOnBlur(index, 'installation_cost')}
           />
 
+          <label className="small-label">Annual savings</label>
           <CurrencyInput
             id={`annual_savings_${index}`}
             name="annual_savings"
             placeholder="Annual Savings"
             value={measure.annual_savings}
             decimalsLimit={2}
-            allowTrailingZeros={true}
             prefix="£"
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'annual_savings', value } })
@@ -69,6 +69,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             onBlur={forceTwoDecimalsOnBlur(index, 'annual_savings')}
           />
 
+          <label className="small-label">Measure lifetime</label>  
           <NumericFormat
             value={measure.lifetime}
             displayType={'input'}

@@ -86,7 +86,7 @@ async def calculate(request: CalculationRequest):
     loan_amount = request.installation_cost - request.down_payment - request.government_subsidy
 
     # If the loan amount is zero or negative, return an error.
-    if loan_amount <= 0:
+    if loan_amount < 0:
         raise HTTPException(status_code=400, detail="Loan amount must be positive. Check down payment and subsidy.")
 
     # Convert the annual interest rate to a monthly rate.
@@ -116,20 +116,18 @@ async def calculate(request: CalculationRequest):
 
     current_month = 0  # Tracks the total number of months processed.
 
-    # Loop over each year of the installation's lifetime.
+        # Loop over each year of the installation's lifetime.
     for year in range(1, request.installation_lifetime + 1):
         annual_loan_payment = 0.0
         annual_interest = 0.0
         annual_principal = 0.0
 
-        # Process each month of the year.
         for m in range(1, 13):
             current_month += 1
             if current_month <= total_months:
                 interest_payment = remaining_balance * monthly_rate
                 principal_payment = monthly_payment - interest_payment
                 remaining_balance -= principal_payment
-                # Prevent floating point imprecision from making negative balance.
                 remaining_balance = max(0, remaining_balance)
                 annual_loan_payment += monthly_payment
                 annual_interest += interest_payment
@@ -140,45 +138,38 @@ async def calculate(request: CalculationRequest):
         # Calculate base energy savings using the basic input and escalation.
         base_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
         
-        # --- Determine Annual Energy Savings ---
-        # If the advanced form is active and measures are provided, use the measures.
+        # Determine annual energy savings based on form mode:
         if request.use_advanced_form and request.measures:
             measure_energy_savings = 0.0
-            # Loop through each measure, but only include those that are fully configured (nonempty name)
             for measure in request.measures:
                 if measure.name.strip() and year <= measure.lifetime:
                     measure_energy_savings += measure.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
-            # Start with the sum of the measure energy savings
             annual_energy_savings = measure_energy_savings
 
-            # --- Combined Savings Bonus ---
-            # Define your combo bonus rules as a dictionary mapping combos to bonus percentage.
             combo_definitions = {
                 ('solar_pv', 'heat_pump'): 0.1,
                 ('solar_pv', 'battery'): 0.1,
             }
-
-            # Compute bonus for each combo.
             combined_savings_bonus = 0.0
-            # In Python, this is a normal for loop:
             for combo, bonus_pct in combo_definitions.items():
-                # Check if all measures in the combo are present and active this year.
                 if all(any(m.name.lower() == measure and year <= m.lifetime for m in request.measures) for measure in combo):
-                    # Sum savings for only the measures in this combo.
                     combo_savings = sum(
                         m.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
-                        for m in request.measures
-                        if m.name.lower() in combo and year <= m.lifetime
+                        for m in request.measures if m.name.lower() in combo and year <= m.lifetime
                     )
                     combined_savings_bonus += bonus_pct * combo_savings
-
             annual_energy_savings += combined_savings_bonus
         else:
-            # In basic mode, use only the basic input value (with escalation).
             annual_energy_savings = base_energy_savings
 
-        # --- Compute Cash Flow ---
+        # Compute net cash flow for the year.
         net_cash_flow = annual_energy_savings - annual_loan_payment
+
+        # If there is no loan (loan_amount == 0) then subtract the down payment
+        # in the first year (to reflect the immediate cost).
+        if loan_amount == 0 and year == 1:
+            net_cash_flow -= request.down_payment
+
         discount_factor = 1 / ((1 + request.discount_rate) ** year)
         discounted_net_cash_flow = net_cash_flow * discount_factor
 
@@ -211,6 +202,7 @@ async def calculate(request: CalculationRequest):
             discounted_cumulative_net_cash_flow=round(discounted_cumulative_net_cash_flow, 2)
         )
         yearly_details.append(yearly_detail)
+
 
     # -------------------------------
     # Summary Totals Calculations

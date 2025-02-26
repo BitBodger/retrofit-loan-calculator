@@ -172,6 +172,18 @@ hr {
   box-sizing: border-box;
 }
 
+.small-label {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.field-description {
+  font-size: 0.75rem; 
+  margin: 0;
+  font-weight: normal;
+  max-width: 200px;
+}
+
 .calculator {
   min-width: 1000px;
   max-width: 1000px;
@@ -392,6 +404,10 @@ input, select {
 /* ========================================================= */
 /*                   TABLE & RESULTS STYLES                 */
 /* ========================================================= */
+
+.summary-totals p {
+  text-align: center;
+}
 
 table {
   width: 1000px;

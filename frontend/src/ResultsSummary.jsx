@@ -9,31 +9,31 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
           {applyDiscount ? (
             <>
               <p>
-                <strong>Total Cost:</strong> £
+                <strong>Total Cost</strong> £
                 {results.total_cost
                   ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Interest:</strong> £
+                <strong>Total Interest</strong> £
                 {results.total_interest
                   ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Savings:</strong> £
+                <strong>Total Savings</strong> £
                 {results.total_savings
                   ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Net Savings:</strong> £
+                <strong>Net Savings</strong> £
                 {results.net_savings
                   ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Payback Year:</strong>
+                <strong>Payback Year</strong>
                 {results.discounted_payback_time === 0 ? (
                   <span className="no-payback">
                     Does not payback within installation lifetime
@@ -46,31 +46,31 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
           ) : (
             <>
               <p>
-                <strong>Total Cost:</strong> £
+                <strong>Total Cost</strong> £
                 {results.total_cost
                   ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Interest:</strong> £
+                <strong>Total Interest</strong> £
                 {results.total_interest
                   ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Savings:</strong> £
+                <strong>Total Savings</strong> £
                 {results.total_savings
                   ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Net Savings:</strong> £
+                <strong>Net Savings</strong> £
                 {results.net_savings
                   ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
                   : 'N/A'}
               </p>
               <p>
-                <strong>Payback Year:</strong>
+                <strong>Payback Year</strong>
                 {results.payback_time === 0 ? (
                   <span className="no-payback">
                     Does not payback within installation lifetime
@@ -106,7 +106,7 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
             <thead>
               <tr>
                 <th>Year</th>
-                <th>Annual Loan Payment</th>
+                <th>Annual Loan Repayment</th>
                 <th>Remaining Loan Balance</th>
                 <th>Interest Portion</th>
                 <th>Principal Portion</th>

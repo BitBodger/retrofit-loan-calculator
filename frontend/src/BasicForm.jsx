@@ -40,8 +40,7 @@ function BasicForm({
               name="installation_cost"
               placeholder="£0.00"
               value={inputs.installation_cost}
-              decimalsLimit={2}            // Max 2 decimals
-              allowTrailingZeros={true}    // Keep trailing zeros if typed
+              decimalsLimit={2}
               prefix="£"
               // onValueChange just passes raw value to handleChange
               onValueChange={(value) => 
@@ -51,7 +50,11 @@ function BasicForm({
               onBlur={forceTwoDecimalsOnBlur}
               readOnly={advancedActive}
             />
+            <p className="field-description">
+              Total cost of all the retrofit measures
+            </p>
           </div>
+          
           <div className="form-group">
             <label>Installation Lifetime</label>
             <NumericFormat
@@ -65,7 +68,11 @@ function BasicForm({
               }
               readOnly={advancedActive}
             />
+            <p className="field-description">
+              How long the installation will last
+            </p>
           </div>
+          
           <div className="form-group">
             <label>Energy Savings Per Year</label>
             <CurrencyInput
@@ -74,7 +81,6 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.energy_savings_per_year}
               decimalsLimit={2}
-              allowTrailingZeros={true}
               prefix="£"
               onValueChange={(value) =>
                 handleChange({ target: { name: 'energy_savings_per_year', value } })
@@ -82,6 +88,9 @@ function BasicForm({
               onBlur={forceTwoDecimalsOnBlur}
               readOnly={advancedActive}
             />
+            <p className="field-description">
+              Total predicted energy savings from the installation in the first year
+            </p>
           </div>
         </div>
 
@@ -100,7 +109,11 @@ function BasicForm({
                 handleChange({ target: { name: 'loan_interest_rate', value: values.value } })
               }
             />
+            <p className="field-description">
+              What is the interest rate of the loan you&apos;re considering taking out
+            </p>
           </div>
+          
           <div className="form-group">
             <label>Loan Term</label>
             <NumericFormat
@@ -112,7 +125,11 @@ function BasicForm({
                 handleChange({ target: { name: 'loan_term', value: values.value } })
               }
             />
+            <p className="field-description">
+              Over what period will the loan be repayed
+            </p>
           </div>
+          
           <div className="form-group">
             <label>Loan Amount</label>
             <CurrencyInput
@@ -120,42 +137,12 @@ function BasicForm({
               name="loan_amount"
               value={calculatedLoanAmount.toFixed(2)}
               decimalsLimit={2}
-              allowTrailingZeros={true}
               prefix="£"
               readOnly
             />
-          </div>
-        </div>
-
-        {/* Economic Conditions Section */}
-        <div className="form-section">
-          <h3>Economic Conditions</h3>
-          <div className="form-group">
-            <label>Discount Rate</label>
-            <NumericFormat
-              value={inputs.discount_rate}
-              displayType={'input'}
-              suffix={'%'}
-              decimalScale={1}
-              fixedDecimalScale={true}
-              onValueChange={(values) =>
-                handleChange({ target: { name: 'discount_rate', value: values.value } })
-              }
-              disabled={!applyDiscount}
-            />
-          </div>
-          <div className="form-group">
-            <label>Energy Price Escalation</label>
-            <NumericFormat
-              value={inputs.energy_price_escalation}
-              displayType={'input'}
-              suffix={'%'}
-              decimalScale={1}
-              fixedDecimalScale={true}
-              onValueChange={(values) =>
-                handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
-              }
-            />
+            <p className="field-description">
+              The total you are borrowing - this is the installation cost minus any down payment or government subsidy
+            </p>
           </div>
         </div>
 
@@ -170,14 +157,17 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.down_payment}
               decimalsLimit={2}
-              allowTrailingZeros={true}
               prefix="£"
               onValueChange={(value) =>
                 handleChange({ target: { name: 'down_payment', value } })
               }
               onBlur={forceTwoDecimalsOnBlur}
             />
+            <p className="field-description">
+              Any sum that you are paying upfront out of your own pocket
+            </p>
           </div>
+
           <div className="form-group">
             <label>Government Subsidy</label>
             <CurrencyInput
@@ -186,15 +176,61 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.government_subsidy}
               decimalsLimit={2}
-              allowTrailingZeros={true}
               prefix="£"
               onValueChange={(value) =>
                 handleChange({ target: { name: 'government_subsidy', value } })
               }
               onBlur={forceTwoDecimalsOnBlur}
             />
+            <p className="field-description">
+              Any sum funded by government that is being paid upfront 
+            </p>
           </div>
         </div>
+
+        {/* Economic Conditions Section */}
+        {advancedActive && (
+        <div className="form-section">
+          <h3>Economic Conditions</h3>
+          
+          <div className="form-group">
+            <label>Energy Price Escalation</label>
+            <NumericFormat
+              value={inputs.energy_price_escalation}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
+              }
+            />
+            <p className="field-description">
+              The rate at which energy prices are expected to increase year on year for the duration of the installation
+            </p>
+          </div>
+          
+          <div className="form-group">
+            <label>Discount Rate</label>
+            <NumericFormat
+              value={inputs.discount_rate}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'discount_rate', value: values.value } })
+              }
+              disabled={!applyDiscount}
+            />
+            <p className="field-description">
+              The rate at which money devalues over time considering inflation, savings interest and/or borrowing costs
+            </p>
+          </div>
+          
+        </div>
+        )}
+
       </div>
       <div className="form-controls">
         <button type="submit">Calculate</button>

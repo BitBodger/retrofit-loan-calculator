@@ -23,6 +23,9 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
             <option value="new_electric_storage_heaters">New Electric Storage Heaters</option>
             <option value="coal">Coal</option>
           </select>
+          <p className="field-description">
+            The energy savings of certain retrofit measures depend on what heating system you have or are going to replace 
+          </p>
         </div>
         <div className="form-group">
           <label>Home Size</label>
@@ -35,6 +38,15 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
             <option value="medium">Medium</option>
             <option value="large">Large</option>
           </select>
+          <p className="field-description">
+            {
+              inputs.home_size === "medium"
+                ? "Medium-sized 2-3 bedroom house"
+                : inputs.home_size === "small"
+                  ? "Smaller 1-2 bedroom house or flat"
+                  : "Larger 4-5 bedroom house"
+            }
+          </p>
         </div>
       </div>
       <div className="measures-section">
