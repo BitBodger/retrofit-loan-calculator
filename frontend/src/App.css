@@ -166,11 +166,40 @@ hr {
   gap: 1rem;
 }
 
-.measures-form button {
-  height: 2.5rem;
-  width: 8rem;
+.measures-form button.add-measure {
+  height: 2.2rem;
+  width: 200px;
   box-sizing: border-box;
+  margin-top: 0.2rem;
 }
+
+/* Higher specificity so it overrides the global 'button' style */
+.measures-form .remove-measure {
+  all: unset;               /* Clears inherited styles (modern browsers) */
+  position: absolute;
+  top: 0.2rem;
+  right: 2.3rem;
+
+  /* Re-add only the styles you want: */
+  display: inline-block;    /* so it's a clickable area */
+  width: 1.2rem;
+  height: 1.2rem;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  text-align: center;
+  color: #5f280f;
+  cursor: pointer;
+  background: none;         /* no background */
+  border: none;             /* no border */
+  padding: 0;               /* no padding */
+  transition: 0.3s;
+}
+
+.measures-form .remove-measure:hover {
+  transform: scale(1.3);    /* optional small hover effect */
+  transition: 0.3s;
+}
+
 
 .small-label {
   display: block;
@@ -220,6 +249,7 @@ hr {
 
 .measure {
   align-self: start; /* For grid items or flex items */
+  position: relative;
 }
 
 .measures-form {

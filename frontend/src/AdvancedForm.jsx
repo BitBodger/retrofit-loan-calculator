@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import MeasuresForm from './MeasuresForm';
 
-function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, addNewMeasure }) {
+function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, addNewMeasure, handleRemoveMeasure }) {
   return (
     <div className="advanced-form-container">
       <div className="your-home-section">
@@ -55,6 +55,7 @@ function AdvancedForm({ inputs, handleChange, measures, handleMeasureChange, add
           measures={measures} 
           handleMeasureChange={handleMeasureChange} 
           addNewMeasure={addNewMeasure}
+          handleRemoveMeasure={handleRemoveMeasure}
         />
       </div>
     </div>
@@ -86,6 +87,7 @@ AdvancedForm.propTypes = {
   ).isRequired,
   handleMeasureChange: PropTypes.func.isRequired,
   addNewMeasure: PropTypes.func.isRequired,
+  handleRemoveMeasure: PropTypes.func.isRequired,
 };
 
 export default AdvancedForm;

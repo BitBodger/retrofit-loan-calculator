@@ -117,6 +117,11 @@ function Calculator() {
       return newMeasures;
     });
   };
+  
+  const handleRemoveMeasure = (indexToRemove) => {
+    setMeasures((prevMeasures) => prevMeasures.filter((_, idx) => idx !== indexToRemove));
+  };
+  
 
   // -------------------------------
   // useEffect Hooks for Derived Calculations
@@ -283,6 +288,7 @@ function Calculator() {
           measures={measures}
           handleMeasureChange={handleMeasureChange}
           addNewMeasure={addNewMeasure}
+          handleRemoveMeasure={handleRemoveMeasure}
         />
       )}
 

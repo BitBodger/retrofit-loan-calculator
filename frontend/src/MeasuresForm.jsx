@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import CurrencyInput from 'react-currency-input-field';
 import { NumericFormat } from 'react-number-format';
 
-function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
+function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemoveMeasure }) {
   // A small helper that forces two decimals on blur.
   const forceTwoDecimalsOnBlur = (index, fieldName) => (e) => {
     // e.target.value might include "£" or commas, so strip them out to parse.
@@ -21,6 +21,15 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
       {measures.map((measure, index) => (
         <div key={index} className="measure">
           <label>Measure {index + 1}</label>
+          {/* Remove button (a cross icon) */}
+          <button 
+              type="button" 
+              className="remove-measure" 
+              onClick={() => handleRemoveMeasure(index)}
+              title="Remove measure"
+            >
+              &#x2715;
+            </button>
           <select
             name="name"
             value={measure.name}
@@ -83,7 +92,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
           />
         </div>
       ))}
-      <button type="button" onClick={addNewMeasure}>Add Measure</button>
+      <button type="button" className="add-measure" onClick={addNewMeasure}>Add Measure</button>
     </div>
   );
 }
@@ -98,6 +107,7 @@ MeasuresForm.propTypes = {
     })
   ).isRequired,
   handleMeasureChange: PropTypes.func.isRequired,
+  handleRemoveMeasure: PropTypes.func.isRequired,
   addNewMeasure: PropTypes.func.isRequired,
 };
 
