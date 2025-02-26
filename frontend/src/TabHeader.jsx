@@ -24,7 +24,7 @@ function TabHeader({ activeTab, setActiveTab }) {
 
 TabHeader.propTypes = {
   activeTab: PropTypes.string,
-  setActiveTab: PropTypes.string
+  setActiveTab: PropTypes.func
 }
 
 export default TabHeader;

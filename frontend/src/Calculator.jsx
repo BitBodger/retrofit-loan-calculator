@@ -213,8 +213,22 @@ function Calculator() {
   // recalc: Main Calculation Function
   // -------------------------------
   const recalc = useCallback(() => {
-    //setIsLoading(true);
-
+    // Optionally, log the current measures for debugging.
+    console.log("Original measures:", measures);
+  
+    // Filter out measures with an empty name or non-numeric lifetime,
+    // and also check that installation_cost and annual_savings are valid numbers.
+    const validMeasures = measures.filter((measure) => {
+      const nameValid = measure.name.trim() !== "";
+      const lifetimeNum = parseInt(measure.lifetime, 10);
+      const lifetimeValid = !isNaN(lifetimeNum);
+      const costValid = !isNaN(parseFloat(measure.installation_cost));
+      const savingsValid = !isNaN(parseFloat(measure.annual_savings));
+      return nameValid && lifetimeValid && costValid && savingsValid;
+    });
+    
+    console.log("Valid measures:", validMeasures);
+  
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
       installation_lifetime: parseInt(inputs.installation_lifetime, 10),
@@ -228,7 +242,7 @@ function Calculator() {
       home_size: inputs.home_size,
       existing_heating_system: inputs.existing_heating_system,
       use_advanced_form: activeTab === "advanced",
-      measures: measures.map(measure => ({
+      measures: validMeasures.map(measure => ({
         name: measure.name,
         installation_cost: parseFloat(measure.installation_cost),
         repairs_and_enabling_works_cost: parseFloat(measure.repairs_and_enabling_works_cost || 0),
@@ -236,14 +250,13 @@ function Calculator() {
         lifetime: parseInt(measure.lifetime, 10)
       }))
     };
-
+  
+    console.log("Payload:", payload);
+  
     axios
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
-      .catch(error => console.error('Error making API call:', error))
-      //.finally(() => {
-      //  setIsLoading(false);
-      //});
+      .catch(error => console.error('Error making API call:', error));
   }, [inputs, activeTab, measures]);
 
   // -------------------------------

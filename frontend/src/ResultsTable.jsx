@@ -6,7 +6,7 @@ function ResultsTable({ results }) {
       <thead>
         <tr>
           <th>Year</th>
-          <th>Annual Loan Payment</th>
+          <th>Annual Payment</th>
           <th>Remaining Loan Balance</th>
           <th>Interest Portion</th>
           <th>Principal Portion</th>

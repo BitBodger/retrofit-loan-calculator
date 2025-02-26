@@ -10,9 +10,26 @@ function BasicForm({
   applyDiscount,
   advancedActive,
 }) {
+  // A small onBlur handler that forces two decimals if the user typed a decimal.
+  const forceTwoDecimalsOnBlur = (e) => {
+    const { name, value } = e.target;
+    // Remove currency symbols, commas, etc., leaving just numeric + decimal.
+    const rawValue = value.replace(/[^\d.]/g, '');
+
+    // If there's something typed, parse it and fix to 2 decimals.
+    if (rawValue && !isNaN(parseFloat(rawValue))) {
+      const forcedTwoDecimals = parseFloat(rawValue).toFixed(2);
+      // If the forced value differs, update the state.
+      if (forcedTwoDecimals !== rawValue) {
+        handleChange({ target: { name, value: forcedTwoDecimals } });
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="basic-form-container">
+
         {/* Installation Section */}
         <div className="form-section">
           <h3>Installation</h3>
@@ -23,13 +40,15 @@ function BasicForm({
               name="installation_cost"
               placeholder="£0.00"
               value={inputs.installation_cost}
-              decimalsLimit={2}
-              fixedDecimalLength={2}
+              decimalsLimit={2}            // Max 2 decimals
+              allowTrailingZeros={true}    // Keep trailing zeros if typed
               prefix="£"
-              onValueChange={(value) => {
-                const formattedValue = parseFloat(value).toFixed(2);
-                handleChange({ target: { name: 'installation_cost', formattedValue } })
-              }}
+              // onValueChange just passes raw value to handleChange
+              onValueChange={(value) => 
+                handleChange({ target: { name: 'installation_cost', value } })
+              }
+              // onBlur forcibly sets 2 decimals if needed
+              onBlur={forceTwoDecimalsOnBlur}
               readOnly={advancedActive}
             />
           </div>
@@ -39,12 +58,11 @@ function BasicForm({
               value={inputs.installation_lifetime}
               displayType={'input'}
               suffix={' years'}
-              placeholder='0 years'
+              placeholder="0 years"
               decimalScale={0}
-              onValueChange={(values) => {
-                const { value } = values;
-                handleChange({ target: { name: 'installation_lifetime', value } });
-              }}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'installation_lifetime', value: values.value } })
+              }
               readOnly={advancedActive}
             />
           </div>
@@ -56,12 +74,12 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.energy_savings_per_year}
               decimalsLimit={2}
-              fixedDecimalLength={2}
+              allowTrailingZeros={true}
               prefix="£"
-              onValueChange={(value) => {
-                const formattedValue = parseFloat(value).toFixed(2);
-                handleChange({ target: { name: 'energy_savings_per_year', formattedValue } })
-              }}
+              onValueChange={(value) =>
+                handleChange({ target: { name: 'energy_savings_per_year', value } })
+              }
+              onBlur={forceTwoDecimalsOnBlur}
               readOnly={advancedActive}
             />
           </div>
@@ -78,10 +96,9 @@ function BasicForm({
               suffix={'%'}
               decimalScale={1}
               fixedDecimalScale={true}
-              onValueChange={(values) => {
-                const { value } = values;
-                handleChange({ target: { name: 'loan_interest_rate', value } });
-              }}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'loan_interest_rate', value: values.value } })
+              }
             />
           </div>
           <div className="form-group">
@@ -91,10 +108,9 @@ function BasicForm({
               displayType={'input'}
               suffix={' years'}
               decimalScale={0}
-              onValueChange={(values) => {
-                const { value } = values;
-                handleChange({ target: { name: 'loan_term', value } });
-              }}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'loan_term', value: values.value } })
+              }
             />
           </div>
           <div className="form-group">
@@ -104,6 +120,7 @@ function BasicForm({
               name="loan_amount"
               value={calculatedLoanAmount.toFixed(2)}
               decimalsLimit={2}
+              allowTrailingZeros={true}
               prefix="£"
               readOnly
             />
@@ -121,10 +138,9 @@ function BasicForm({
               suffix={'%'}
               decimalScale={1}
               fixedDecimalScale={true}
-              onValueChange={(values) => {
-                const { value } = values;
-                handleChange({ target: { name: 'discount_rate', value } });
-              }}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'discount_rate', value: values.value } })
+              }
               disabled={!applyDiscount}
             />
           </div>
@@ -136,10 +152,9 @@ function BasicForm({
               suffix={'%'}
               decimalScale={1}
               fixedDecimalScale={true}
-              onValueChange={(values) => {
-                const { value } = values;
-                handleChange({ target: { name: 'energy_price_escalation', value } });
-              }}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
+              }
             />
           </div>
         </div>
@@ -155,10 +170,12 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.down_payment}
               decimalsLimit={2}
+              allowTrailingZeros={true}
               prefix="£"
               onValueChange={(value) =>
                 handleChange({ target: { name: 'down_payment', value } })
               }
+              onBlur={forceTwoDecimalsOnBlur}
             />
           </div>
           <div className="form-group">
@@ -169,10 +186,12 @@ function BasicForm({
               placeholder="£0.00"
               value={inputs.government_subsidy}
               decimalsLimit={2}
+              allowTrailingZeros={true}
               prefix="£"
               onValueChange={(value) =>
                 handleChange({ target: { name: 'government_subsidy', value } })
               }
+              onBlur={forceTwoDecimalsOnBlur}
             />
           </div>
         </div>
@@ -202,9 +221,7 @@ BasicForm.propTypes = {
   calculatedLoanAmount: PropTypes.number.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   applyDiscount: PropTypes.bool.isRequired,
-  handleApplyDiscountChange: PropTypes.func.isRequired,
   advancedActive: PropTypes.bool.isRequired,
-  isLoading: PropTypes.bool
 };
 
 export default BasicForm;

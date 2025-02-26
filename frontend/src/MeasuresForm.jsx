@@ -3,6 +3,19 @@ import CurrencyInput from 'react-currency-input-field';
 import { NumericFormat } from 'react-number-format';
 
 function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
+  // A small helper that forces two decimals on blur.
+  const forceTwoDecimalsOnBlur = (index, fieldName) => (e) => {
+    // e.target.value might include "£" or commas, so strip them out to parse.
+    const rawValue = e.target.value.replace(/[^\d.]/g, '');
+    if (rawValue && !isNaN(parseFloat(rawValue))) {
+      const forcedTwoDecimals = parseFloat(rawValue).toFixed(2);
+      if (forcedTwoDecimals !== rawValue) {
+        // Update the measure with exactly 2 decimals.
+        handleMeasureChange(index, { target: { name: fieldName, value: forcedTwoDecimals } });
+      }
+    }
+  };
+
   return (
     <div className="measures-form">
       {measures.map((measure, index) => (
@@ -31,12 +44,15 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             name="installation_cost"
             placeholder="Installation Cost"
             value={measure.installation_cost}
-            decimalsLimit={2}
-            fixedDecimalLength={2}
+            decimalsLimit={2}            // Maximum of 2 decimal digits
+            allowTrailingZeros={true}    // Keep trailing zeros if typed
             prefix="£"
+            // Update measure state on every change with raw value
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'installation_cost', value } })
             }
+            // Force exactly 2 decimals on blur
+            onBlur={forceTwoDecimalsOnBlur(index, 'installation_cost')}
           />
 
           <CurrencyInput
@@ -45,11 +61,12 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure }) {
             placeholder="Annual Savings"
             value={measure.annual_savings}
             decimalsLimit={2}
-            fixedDecimalLength={2}
+            allowTrailingZeros={true}
             prefix="£"
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'annual_savings', value } })
             }
+            onBlur={forceTwoDecimalsOnBlur(index, 'annual_savings')}
           />
 
           <NumericFormat

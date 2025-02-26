@@ -17,7 +17,6 @@ app.add_middleware(
 # -----------------------------
 # Data Models
 # -----------------------------
-
 class Measure(BaseModel):
     name: str
     installation_cost: float
@@ -66,18 +65,10 @@ class CalculationResponse(BaseModel):
 # -----------------------------
 # Helper Functions
 # -----------------------------
-
 def pmt(rate: float, nper: int, pv: float) -> float:
     """
     Calculate the fixed payment (PMT) for a loan with constant interest and payments.
-
-    Parameters:
-      rate (float): Interest rate per period (for monthly calculations, use the monthly rate).
-      nper (int): Total number of payment periods.
-      pv (float): Present value or principal.
-
-    Returns:
-      float: The payment amount as a negative number (representing cash outflow).
+    Returns the payment as a negative number (representing cash outflow).
     """
     if rate == 0:
         return -pv / nper
@@ -86,29 +77,30 @@ def pmt(rate: float, nper: int, pv: float) -> float:
 # -----------------------------
 # Main Calculation Endpoint
 # -----------------------------
-
 @app.post("/api/calculate", response_model=CalculationResponse)
 async def calculate(request: CalculationRequest):
-    # Calculate the initial loan amount by subtracting the down payment and government subsidy
-    # from the installation cost.
+    # Calculate the initial loan amount from the basic installation cost,
+    # subtracting down payment and government subsidy.
+    # In basic mode, this comes directly from the basic inputs.
+    # In advanced mode, the frontend sends derived values.
     loan_amount = request.installation_cost - request.down_payment - request.government_subsidy
 
-    # Validate that the loan amount is positive. If not, return an error.
+    # If the loan amount is zero or negative, return an error.
     if loan_amount <= 0:
         raise HTTPException(status_code=400, detail="Loan amount must be positive. Check down payment and subsidy.")
 
     # Convert the annual interest rate to a monthly rate.
     monthly_rate = request.loan_interest_rate / 12.0
-    # Calculate the total number of monthly payment periods.
+    # Determine the total number of monthly payments.
     total_months = request.loan_term * 12
 
-    # Compute the fixed monthly payment using the PMT function.
+    # Calculate the fixed monthly payment using the PMT function.
     monthly_payment = -pmt(monthly_rate, total_months, loan_amount)
 
-    # Initialize the remaining balance to the full loan amount.
+    # Initialize remaining balance to the full loan amount.
     remaining_balance = loan_amount
 
-    # Initialize lists and accumulators for yearly details and summary totals.
+    # Initialize accumulators for yearly details and overall totals.
     yearly_details = []
     cumulative_net_cash_flow = 0.0
     discounted_cumulative_net_cash_flow = 0.0
@@ -122,8 +114,7 @@ async def calculate(request: CalculationRequest):
     total_discounted_loan_payments = 0.0
     discounted_payback_time = 0
 
-    # Track the overall month count across the repayment schedule.
-    current_month = 0
+    current_month = 0  # Tracks the total number of months processed.
 
     # Loop over each year of the installation's lifetime.
     for year in range(1, request.installation_lifetime + 1):
@@ -131,12 +122,14 @@ async def calculate(request: CalculationRequest):
         annual_interest = 0.0
         annual_principal = 0.0
 
+        # Process each month of the year.
         for m in range(1, 13):
             current_month += 1
             if current_month <= total_months:
                 interest_payment = remaining_balance * monthly_rate
                 principal_payment = monthly_payment - interest_payment
                 remaining_balance -= principal_payment
+                # Prevent floating point imprecision from making negative balance.
                 remaining_balance = max(0, remaining_balance)
                 annual_loan_payment += monthly_payment
                 annual_interest += interest_payment
@@ -144,48 +137,47 @@ async def calculate(request: CalculationRequest):
             else:
                 break
 
-        # Base energy savings using the global base rate.
+        # Calculate base energy savings using the basic input and escalation.
         base_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
-
-        # Sum energy savings from measures that are still active this year.
-        measure_energy_savings = 0.0
+        
+        # --- Determine Annual Energy Savings ---
+        # If the advanced form is active and measures are provided, use the measures.
         if request.use_advanced_form and request.measures:
+            measure_energy_savings = 0.0
+            # Loop through each measure, but only include those that are fully configured (nonempty name)
             for measure in request.measures:
-                if year <= measure.lifetime:
+                if measure.name.strip() and year <= measure.lifetime:
                     measure_energy_savings += measure.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
+            # Start with the sum of the measure energy savings
             annual_energy_savings = measure_energy_savings
-            # Apply combined savings bonus if specific combinations exist.
-            selected_measure_names = [m.name.lower() for m in request.measures]
-            
-            # Assume that measure_energy_savings is already the sum of all active measure savings.
-            # We'll compute additional bonus savings based only on the measures in each combo.
-            combined_savings_bonus = 0.0
 
-            # Define your combo rules:
+            # --- Combined Savings Bonus ---
+            # Define your combo bonus rules as a dictionary mapping combos to bonus percentage.
             combo_definitions = {
                 ('solar_pv', 'heat_pump'): 0.1,
                 ('solar_pv', 'battery'): 0.1,
             }
 
-            # For each combo, check if all required measures are present and active for this year.
+            # Compute bonus for each combo.
+            combined_savings_bonus = 0.0
+            # In Python, this is a normal for loop:
             for combo, bonus_pct in combo_definitions.items():
-                # Check if all measures in the combo are active in the current year.
+                # Check if all measures in the combo are present and active this year.
                 if all(any(m.name.lower() == measure and year <= m.lifetime for m in request.measures) for measure in combo):
-                    # Sum savings only from the measures in the combo.
+                    # Sum savings for only the measures in this combo.
                     combo_savings = sum(
                         m.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
-                        for m in request.measures 
+                        for m in request.measures
                         if m.name.lower() in combo and year <= m.lifetime
                     )
                     combined_savings_bonus += bonus_pct * combo_savings
 
-            # Apply the bonus only to the savings from the measures, not the base savings.
-            annual_energy_savings = measure_energy_savings + combined_savings_bonus
-
-
+            annual_energy_savings += combined_savings_bonus
         else:
+            # In basic mode, use only the basic input value (with escalation).
             annual_energy_savings = base_energy_savings
 
+        # --- Compute Cash Flow ---
         net_cash_flow = annual_energy_savings - annual_loan_payment
         discount_factor = 1 / ((1 + request.discount_rate) ** year)
         discounted_net_cash_flow = net_cash_flow * discount_factor
@@ -220,31 +212,20 @@ async def calculate(request: CalculationRequest):
         )
         yearly_details.append(yearly_detail)
 
-
-    # ----------------------------------
+    # -------------------------------
     # Summary Totals Calculations
-    # ----------------------------------
-
-    # Nominal Total Cost:
-    # - Down payment is paid upfront (not financed).
-    # - Loan amount and total interest represent the cost of financing.
+    # -------------------------------
     total_cost = request.down_payment + loan_amount + total_interest
-
     total_savings = total_energy_savings
     net_savings = total_savings - total_cost
 
-    # Discounted Total Cost:
-    # - Down payment remains undiscounted (paid immediately).
-    # - The sum of loan amount and total interest is discounted over the loan term.
     discounted_total_cost = request.down_payment + ((loan_amount + total_interest) / ((1 + request.discount_rate) ** request.loan_term))
-
     discounted_total_savings = total_discounted_energy_savings
     discounted_net_savings = discounted_total_savings - discounted_total_cost
 
-    # ----------------------------------
+    # -------------------------------
     # Return the Calculation Response
-    # ----------------------------------
-
+    # -------------------------------
     return CalculationResponse(
         yearly_details=yearly_details,
         total_cost=round(total_cost, 2),
@@ -257,3 +238,4 @@ async def calculate(request: CalculationRequest):
         discounted_payback_time=discounted_payback_time,
         total_interest=round(total_interest, 2)
     )
+
