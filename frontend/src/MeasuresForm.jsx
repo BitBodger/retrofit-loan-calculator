@@ -1,21 +1,9 @@
 import PropTypes from 'prop-types';
 import CurrencyInput from 'react-currency-input-field';
 import { NumericFormat } from 'react-number-format';
+import { createForceTwoDecimalsOnBlur } from './numberFormatUtils';
 
 function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemoveMeasure }) {
-  // A small helper that forces two decimals on blur.
-  const forceTwoDecimalsOnBlur = (index, fieldName) => (e) => {
-    // e.target.value might include "£" or commas, so strip them out to parse.
-    const rawValue = e.target.value.replace(/[^\d.]/g, '');
-    if (rawValue && !isNaN(parseFloat(rawValue))) {
-      const forcedTwoDecimals = parseFloat(rawValue).toFixed(2);
-      if (forcedTwoDecimals !== rawValue) {
-        // Update the measure with exactly 2 decimals.
-        handleMeasureChange(index, { target: { name: fieldName, value: forcedTwoDecimals } });
-      }
-    }
-  };
-
   return (
     <div className="measures-form">
       {measures.map((measure, index) => (
@@ -23,13 +11,13 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
           <label>Measure {index + 1}</label>
           {/* Remove button (a cross icon) */}
           <button 
-              type="button" 
-              className="remove-measure" 
-              onClick={() => handleRemoveMeasure(index)}
-              title="Remove measure"
-            >
-              &#x2715;
-            </button>
+            type="button" 
+            className="remove-measure" 
+            onClick={() => handleRemoveMeasure(index)}
+            title="Remove measure"
+          >
+            &#x2715;
+          </button>
           <select
             name="name"
             value={measure.name}
@@ -53,15 +41,18 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
             id={`installation_cost_${index}`}
             name="installation_cost"
             placeholder="Installation Cost"
-            value={measure.installation_cost}
-            decimalsLimit={2}            // Maximum of 2 decimal digits
+            // Only format if the value is a number; otherwise, leave as is.
+            value={
+              typeof measure.installation_cost === 'number'
+                ? measure.installation_cost.toFixed(2)
+                : measure.installation_cost
+            }
+            decimalsLimit={2} 
             prefix="£"
-            // Update measure state on every change with raw value
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'installation_cost', value } })
             }
-            // Force exactly 2 decimals on blur
-            onBlur={forceTwoDecimalsOnBlur(index, 'installation_cost')}
+            onBlur={createForceTwoDecimalsOnBlur(handleMeasureChange, 'installation_cost', index)}
           />
 
           <label className="small-label">Annual savings</label>
@@ -69,13 +60,17 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
             id={`annual_savings_${index}`}
             name="annual_savings"
             placeholder="Annual Savings"
-            value={measure.annual_savings}
+            value={
+              typeof measure.annual_savings === 'number'
+                ? measure.annual_savings.toFixed(2)
+                : measure.annual_savings
+            }
             decimalsLimit={2}
             prefix="£"
             onValueChange={(value) =>
               handleMeasureChange(index, { target: { name: 'annual_savings', value } })
             }
-            onBlur={forceTwoDecimalsOnBlur(index, 'annual_savings')}
+            onBlur={createForceTwoDecimalsOnBlur(handleMeasureChange, 'annual_savings', index)}
           />
 
           <label className="small-label">Measure lifetime</label>  
@@ -92,7 +87,9 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
           />
         </div>
       ))}
-      <button type="button" className="add-measure" onClick={addNewMeasure}>Add Measure</button>
+      <button type="button" className="add-measure" onClick={addNewMeasure}>
+        Add Measure
+      </button>
     </div>
   );
 }

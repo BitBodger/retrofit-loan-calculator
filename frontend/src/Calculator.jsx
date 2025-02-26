@@ -10,7 +10,7 @@ function Calculator() {
   // -------------------------------
   // State Declarations
   // -------------------------------
-  // Basic inputs shared between forms
+  // Basic inputs shared between forms (stored as strings for display)
   const [inputs, setInputs] = useState({
     installation_cost: '',
     installation_lifetime: '25',
@@ -37,33 +37,29 @@ function Calculator() {
   // Measures added in advanced mode (each with its own fields)
   const [measures, setMeasures] = useState([]);
 
-  // Loading indicator for when we’re waiting for the backend calculation
-  //const [isLoading, setIsLoading] = useState(false);
-
   // -------------------------------
   // Handler Functions
   // -------------------------------
-  
+
   // Toggle discounting checkbox
   const handleApplyDiscountChange = (e) => {
     setApplyDiscount(e.target.checked);
   };
 
-  // Generic handler for basic inputs
+  // Generic handler for basic input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Get a multiplier based on the selected home size.
-  // "small" => 0.67 (33% less), "medium" => 1.0, "large" => 1.5 (50% more)
+  // Returns a multiplier based on the home size (small, medium, large)
   const getHomeSizeMultiplier = (homeSize) => {
     if (homeSize.toLowerCase() === "small") return 0.67;
     if (homeSize.toLowerCase() === "large") return 1.5;
     return 1.0;
   };
 
-  // Add a new (empty) measure to the advanced measures array.
+  // Add a new (empty) measure to the measures array
   const addNewMeasure = () => {
     setMeasures(prev => [
       ...prev,
@@ -71,44 +67,39 @@ function Calculator() {
     ]);
   };
 
-  // Handler to update a specific measure field.
-  // When the measure "name" is selected, we look up defaults from measureDefaults,
-  // adjust by the home size multiplier, and (if applicable) override the annual savings 
-  // based on the selected existing heating system.
+  // Handler to update a measure at a specific index.
+  // When the measure name is changed, look up defaults from measureDefaults,
+  // apply the home size multiplier, and if available override the default annual savings
+  // based on the existing heating system.
   const handleMeasureChange = (index, e) => {
     const { name, value } = e.target;
     setMeasures(prevMeasures => {
       const newMeasures = [...prevMeasures];
       if (name === "name") {
-        // Get the home size multiplier from the current home size selection.
         const multiplier = getHomeSizeMultiplier(inputs.home_size);
-        // Look up the defaults for the selected measure from measureDefaults.
         const defaults = measureDefaults[value.toLowerCase()] || {};
-        // Start with the generic default annual savings.
         let defaultAnnualSavings = defaults.annual_savings;
-        // If there is a mapping for existing heating systems, use that value.
         if (defaults.existingSystems && inputs.existing_heating_system) {
           const existingKey = inputs.existing_heating_system.toLowerCase();
           if (defaults.existingSystems[existingKey] !== undefined) {
             defaultAnnualSavings = defaults.existingSystems[existingKey];
           }
         }
-        // Update this measure with the default values (adjusted by multiplier).
         newMeasures[index] = { 
           ...newMeasures[index],
           name: value,
+          // Store raw numeric values (as numbers) for later conversion
           installation_cost: defaults.installation_cost 
-            ? (parseFloat(defaults.installation_cost) * multiplier).toFixed(2) 
+            ? parseFloat(defaults.installation_cost) * multiplier 
             : '',
           annual_savings: defaultAnnualSavings 
-            ? (parseFloat(defaultAnnualSavings) * multiplier).toFixed(2) 
+            ? parseFloat(defaultAnnualSavings) * multiplier 
             : '',
           lifetime: defaults.lifetime 
             ? defaults.lifetime.toString() 
             : newMeasures[index].lifetime,
         };
       } else {
-        // For other fields (installation_cost, annual_savings, lifetime), update normally.
         newMeasures[index] = { 
           ...newMeasures[index],
           [name]: value,
@@ -117,17 +108,17 @@ function Calculator() {
       return newMeasures;
     });
   };
-  
+
+  // Remove a measure by its index
   const handleRemoveMeasure = (indexToRemove) => {
-    setMeasures((prevMeasures) => prevMeasures.filter((_, idx) => idx !== indexToRemove));
+    setMeasures(prevMeasures => prevMeasures.filter((_, idx) => idx !== indexToRemove));
   };
-  
 
   // -------------------------------
   // useEffect Hooks for Derived Calculations
   // -------------------------------
 
-  // When the existing heating system changes, update each measure's default savings.
+  // When the existing heating system changes, update each measure's default annual savings.
   useEffect(() => {
     const existingSystemKey = inputs.existing_heating_system.toLowerCase();
     setMeasures(prevMeasures =>
@@ -139,17 +130,16 @@ function Calculator() {
         if (measureDef.existingSystems && measureDef.existingSystems[existingSystemKey] !== undefined) {
           defaultAnnualSavings = measureDef.existingSystems[existingSystemKey];
         }
-  
+        // Update the measure's annual_savings
         return {
           ...m,
-          annual_savings: defaultAnnualSavings.toFixed(2),
+          annual_savings: defaultAnnualSavings,
         };
       })
     );
   }, [inputs.existing_heating_system]);
 
-  // When the advanced tab is active, derive the basic inputs (installation cost, energy savings,
-  // and lifetime) from the measures.
+  // When the advanced tab is active, derive basic input values from the measures.
   useEffect(() => {
     if (measures.length > 0 && activeTab === "advanced") {
       const derivedInstallationCost = measures.reduce(
@@ -174,16 +164,14 @@ function Calculator() {
     }
   }, [activeTab, measures]);
 
-  // When the home size changes, update each measure's default values by applying the multiplier.
+  // When the home size (or existing heating system) changes, update each measure's default values.
   useEffect(() => {
     const multiplier = getHomeSizeMultiplier(inputs.home_size);
     const existingSystemKey = inputs.existing_heating_system.toLowerCase();
-    
     setMeasures(prevMeasures =>
       prevMeasures.map(measure => {
         if (measure.name && measureDefaults[measure.name.toLowerCase()]) {
           const defaults = measureDefaults[measure.name.toLowerCase()];
-          // Look up the annual savings for the selected existing heating system, if available.
           let defaultAnnualSavings = defaults.annual_savings;
           if (defaults.existingSystems && defaults.existingSystems[existingSystemKey] !== undefined) {
             defaultAnnualSavings = defaults.existingSystems[existingSystemKey];
@@ -191,19 +179,17 @@ function Calculator() {
           return {
             ...measure,
             installation_cost: defaults.installation_cost 
-              ? (parseFloat(defaults.installation_cost) * multiplier).toFixed(2) 
+              ? parseFloat(defaults.installation_cost) * multiplier
               : measure.installation_cost,
             annual_savings: defaultAnnualSavings 
-              ? (parseFloat(defaultAnnualSavings) * multiplier).toFixed(2) 
+              ? parseFloat(defaultAnnualSavings) * multiplier
               : measure.annual_savings,
-            // Lifetime remains unchanged by home size
           };
         }
         return measure;
       })
     );
   }, [inputs.home_size, inputs.existing_heating_system]);
-  
 
   // -------------------------------
   // Derived Calculation for Loan Amount
@@ -218,11 +204,10 @@ function Calculator() {
   // recalc: Main Calculation Function
   // -------------------------------
   const recalc = useCallback(() => {
-    // Optionally, log the current measures for debugging.
+    // Log measures for debugging
     console.log("Original measures:", measures);
-  
-    // Filter out measures with an empty name or non-numeric lifetime,
-    // and also check that installation_cost and annual_savings are valid numbers.
+    
+    // Filter out incomplete measures (e.g. missing name, lifetime, or non-numeric values)
     const validMeasures = measures.filter((measure) => {
       const nameValid = measure.name.trim() !== "";
       const lifetimeNum = parseInt(measure.lifetime, 10);
@@ -233,7 +218,8 @@ function Calculator() {
     });
     
     console.log("Valid measures:", validMeasures);
-  
+    
+    // Build payload: convert strings to numbers explicitly.
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
       installation_lifetime: parseInt(inputs.installation_lifetime, 10),
@@ -255,9 +241,9 @@ function Calculator() {
         lifetime: parseInt(measure.lifetime, 10)
       }))
     };
-  
+    
     console.log("Payload:", payload);
-  
+    
     axios
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
@@ -277,10 +263,8 @@ function Calculator() {
   // -------------------------------
   return (
     <div className="calculator">
-      {/* Render Tab Header */}
       <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Render AdvancedForm if active */}
       {activeTab === "advanced" && (
         <AdvancedForm
           inputs={inputs}
@@ -292,7 +276,6 @@ function Calculator() {
         />
       )}
 
-      {/* Render BasicForm (always shown) */}
       <BasicForm
         inputs={inputs}
         handleChange={handleChange}
@@ -303,7 +286,6 @@ function Calculator() {
         advancedActive={activeTab === "advanced"}
       />
 
-      {/* Show calculation results if available */}
       {results && (
         <ResultsSummary
           results={results}

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import CurrencyInput from 'react-currency-input-field';
 import { NumericFormat } from 'react-number-format';
+import { createForceTwoDecimalsOnBlur } from './numberFormatUtils';
 
 function BasicForm({ 
   inputs, 
@@ -10,22 +11,6 @@ function BasicForm({
   applyDiscount,
   advancedActive,
 }) {
-  // A small onBlur handler that forces two decimals if the user typed a decimal.
-  const forceTwoDecimalsOnBlur = (e) => {
-    const { name, value } = e.target;
-    // Remove currency symbols, commas, etc., leaving just numeric + decimal.
-    const rawValue = value.replace(/[^\d.]/g, '');
-
-    // If there's something typed, parse it and fix to 2 decimals.
-    if (rawValue && !isNaN(parseFloat(rawValue))) {
-      const forcedTwoDecimals = parseFloat(rawValue).toFixed(2);
-      // If the forced value differs, update the state.
-      if (forcedTwoDecimals !== rawValue) {
-        handleChange({ target: { name, value: forcedTwoDecimals } });
-      }
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="basic-form-container">
@@ -42,12 +27,10 @@ function BasicForm({
               value={inputs.installation_cost}
               decimalsLimit={2}
               prefix="£"
-              // onValueChange just passes raw value to handleChange
               onValueChange={(value) => 
                 handleChange({ target: { name: 'installation_cost', value } })
               }
-              // onBlur forcibly sets 2 decimals if needed
-              onBlur={forceTwoDecimalsOnBlur}
+              onBlur={(e) => createForceTwoDecimalsOnBlur(handleChange, e.target.name)(e)}
               readOnly={advancedActive}
             />
             <p className="field-description">
@@ -85,7 +68,7 @@ function BasicForm({
               onValueChange={(value) =>
                 handleChange({ target: { name: 'energy_savings_per_year', value } })
               }
-              onBlur={forceTwoDecimalsOnBlur}
+              onBlur={(e) => createForceTwoDecimalsOnBlur(handleChange, e.target.name)(e)}
               readOnly={advancedActive}
             />
             <p className="field-description">
@@ -126,7 +109,7 @@ function BasicForm({
               }
             />
             <p className="field-description">
-              Over what period will the loan be repayed
+              Over what period will the loan be repaid
             </p>
           </div>
           
@@ -135,8 +118,9 @@ function BasicForm({
             <CurrencyInput
               id="loan_amount"
               name="loan_amount"
-              value={calculatedLoanAmount.toFixed(2)}
+              value={parseFloat(calculatedLoanAmount).toFixed(2)}
               decimalsLimit={2}
+              fixedDecimalLength={true}
               prefix="£"
               readOnly
             />
@@ -161,7 +145,7 @@ function BasicForm({
               onValueChange={(value) =>
                 handleChange({ target: { name: 'down_payment', value } })
               }
-              onBlur={forceTwoDecimalsOnBlur}
+              onBlur={(e) => createForceTwoDecimalsOnBlur(handleChange, e.target.name)(e)}
             />
             <p className="field-description">
               Any sum that you are paying upfront out of your own pocket
@@ -180,7 +164,7 @@ function BasicForm({
               onValueChange={(value) =>
                 handleChange({ target: { name: 'government_subsidy', value } })
               }
-              onBlur={forceTwoDecimalsOnBlur}
+              onBlur={(e) => createForceTwoDecimalsOnBlur(handleChange, e.target.name)(e)}
             />
             <p className="field-description">
               Any sum funded by government that is being paid upfront 
@@ -190,45 +174,43 @@ function BasicForm({
 
         {/* Economic Conditions Section */}
         {advancedActive && (
-        <div className="form-section">
-          <h3>Economic Conditions</h3>
-          
-          <div className="form-group">
-            <label>Energy Price Escalation</label>
-            <NumericFormat
-              value={inputs.energy_price_escalation}
-              displayType={'input'}
-              suffix={'%'}
-              decimalScale={1}
-              fixedDecimalScale={true}
-              onValueChange={(values) =>
-                handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
-              }
-            />
-            <p className="field-description">
-              The rate at which energy prices are expected to increase year on year for the duration of the installation
-            </p>
+          <div className="form-section">
+            <h3>Economic Conditions</h3>
+            <div className="form-group">
+              <label>Energy Price Escalation</label>
+              <NumericFormat
+                value={inputs.energy_price_escalation}
+                displayType={'input'}
+                suffix={'%'}
+                decimalScale={1}
+                fixedDecimalScale={true}
+                onValueChange={(values) =>
+                  handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
+                }
+              />
+              <p className="field-description">
+                The rate at which energy prices are expected to increase year on year for the duration of the installation
+              </p>
+            </div>
+            
+            <div className="form-group">
+              <label>Discount Rate</label>
+              <NumericFormat
+                value={inputs.discount_rate}
+                displayType={'input'}
+                suffix={'%'}
+                decimalScale={1}
+                fixedDecimalScale={true}
+                onValueChange={(values) =>
+                  handleChange({ target: { name: 'discount_rate', value: values.value } })
+                }
+                disabled={!applyDiscount}
+              />
+              <p className="field-description">
+                The rate at which money devalues over time considering inflation, savings interest and/or borrowing costs
+              </p>
+            </div>
           </div>
-          
-          <div className="form-group">
-            <label>Discount Rate</label>
-            <NumericFormat
-              value={inputs.discount_rate}
-              displayType={'input'}
-              suffix={'%'}
-              decimalScale={1}
-              fixedDecimalScale={true}
-              onValueChange={(values) =>
-                handleChange({ target: { name: 'discount_rate', value: values.value } })
-              }
-              disabled={!applyDiscount}
-            />
-            <p className="field-description">
-              The rate at which money devalues over time considering inflation, savings interest and/or borrowing costs
-            </p>
-          </div>
-          
-        </div>
         )}
 
       </div>
