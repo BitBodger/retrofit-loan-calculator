@@ -5,7 +5,6 @@ import BasicForm from './BasicForm';
 import AdvancedForm from './AdvancedForm';
 import ResultsSummary from './ResultsSummary';
 import measureDefaults from './measureDefaults';
-import LoadingSpinner from './LoadingSpinner';
 
 function Calculator() {
   // -------------------------------
@@ -39,7 +38,7 @@ function Calculator() {
   const [measures, setMeasures] = useState([]);
 
   // Loading indicator for when we’re waiting for the backend calculation
-  const [isLoading, setIsLoading] = useState(false);
+  //const [isLoading, setIsLoading] = useState(false);
 
   // -------------------------------
   // Handler Functions
@@ -214,7 +213,7 @@ function Calculator() {
   // recalc: Main Calculation Function
   // -------------------------------
   const recalc = useCallback(() => {
-    setIsLoading(true);
+    //setIsLoading(true);
 
     const payload = {
       installation_cost: parseFloat(inputs.installation_cost),
@@ -242,9 +241,9 @@ function Calculator() {
       .post('./api/calculate', payload)
       .then(response => setResults(response.data))
       .catch(error => console.error('Error making API call:', error))
-      .finally(() => {
-        setIsLoading(false);
-      });
+      //.finally(() => {
+      //  setIsLoading(false);
+      //});
   }, [inputs, activeTab, measures]);
 
   // -------------------------------
@@ -284,9 +283,6 @@ function Calculator() {
         handleApplyDiscountChange={handleApplyDiscountChange}
         advancedActive={activeTab === "advanced"}
       />
-
-      {/* Show loading spinner if waiting for backend */}
-      {isLoading && <LoadingSpinner />}
 
       {/* Show calculation results if available */}
       {results && (

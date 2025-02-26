@@ -8,7 +8,7 @@ function BasicForm({
   calculatedLoanAmount, 
   handleSubmit, 
   applyDiscount,
-  advancedActive
+  advancedActive,
 }) {
   return (
     <form onSubmit={handleSubmit}>
@@ -204,6 +204,7 @@ BasicForm.propTypes = {
   applyDiscount: PropTypes.bool.isRequired,
   handleApplyDiscountChange: PropTypes.func.isRequired,
   advancedActive: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool
 };
 
 export default BasicForm;

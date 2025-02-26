@@ -3,14 +3,14 @@ function Footer() {
 
     <footer className="site-footer">
       <p>
-        Built by Ben Moloney and supported by&nbsp;
+        Built by <strong>Ben Moloney</strong> and supported by&nbsp;
         <a href="https://plymouthenergycommunity.com" target="_blank" rel="noopener noreferrer">
           Plymouth Energy Community
         </a>
       </p>
       <p>
         I would love to know if you found this calculator useful or not. 
-        Please send reviews to <a href="mailto:bitbodger@proton.me">bitbodger@proton.me</a>
+        Please send reviews to <a href="mailto:info@retrofitloancalculator.co.uk">info@retrofitloancalculator.co.uk</a>
       </p>
     </footer>
 
