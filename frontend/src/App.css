@@ -162,7 +162,7 @@ hr {
 
 .measures-form {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 
@@ -219,32 +219,13 @@ hr {
   margin: 0 auto;
 }
 
-.basic-form-container {
+.form-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   max-width: 1000px;
   margin: 0 auto;
   padding-bottom: 1rem;
-}
-
-.advanced-form-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  max-width: 1000px;
-  margin: 0 auto 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px dashed #5f280f;
-  align-items: start;
-}
-
-.your-home-section {
-  grid-column: 1 / 2;
-}
-
-.measures-section {
-  grid-column: 2 / 5;
 }
 
 .measure {
@@ -348,15 +329,21 @@ input, select {
   margin: 0.2rem 0;
 }
 
-.tabs {
+.active-tabs, .inactive-tabs {
   display: flex;
   align-items: flex-end; /* Ensures tabs align nicely along the bottom */
   border-bottom: 2px solid #5f280f; /* The 'folder' bottom line */
-  margin: 1rem 0
+  margin: 1rem 0;
+  transition: 1s;
+}
+
+.inactive-tabs {
+  scale: 0.8;
+  transition: 1s;
 }
 
 /* Each tab button */
-.tabs button {
+.active-tabs button, .inactive-tabs button {
   background-color: #ffc69b;
   border: 1px solid #5f280f;
   border-bottom: none;
@@ -370,8 +357,10 @@ input, select {
   color: #5f280f;
 }
 
+
+
 /* Active tab has a visible border and merges seamlessly with the bottom line */
-.tabs button.active {
+.active-tabs button.active, .inactive-tabs button.active {
   background-color: #ffba85;
   border: 3px solid #5f280f;
   border-left: 1px solid;
@@ -384,7 +373,7 @@ input, select {
 }
 
 /* Dot to the right of the tab text */
-.tabs button::after {
+.active-tabs button::after, .inactive-tabs button::after{
   content: "";
   width: 10px;
   height: 10px;
@@ -396,12 +385,20 @@ input, select {
   right: 0.3rem;
 }
 
-.tabs button[data-dot="advanced"]::after {
+.active-tabs button[data-dot="advanced"]::after, .inactive-tabs button[data-dot="advanced"]::after{
   background-color: red;
 }
 
-.tabs button[data-dot="basic"]::after {
+.active-tabs button[data-dot="basic"]::after, .inactive-tabs button[data-dot="basic"]::after {
   background-color: green;
+}
+
+.active-tabs button[data-dot="property"]::after, .inactive-tabs button[data-dot="property"]::after {
+  background-color: yellow;
+}
+
+.active-tabs button[data-dot="measures"]::after, .inactive-tabs button[data-dot="measures"]::after {
+  background-color: blue;
 }
 
 /* ========================================================= */
@@ -612,7 +609,7 @@ table tbody tr:hover td:hover {
 /* The actual scrollable container inside */
 .review-container {
   max-height: 260px;  /* Same height as the wrapper */
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 1rem;
   background-color: #ffd0ad;
 }
@@ -703,7 +700,6 @@ table tbody tr:hover td:hover {
   font-weight: normal;
   margin: 0 0.5rem;
 }
-
 
 /* ========================================================= */
 /*                      FOOTER STYLES                        */

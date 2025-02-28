@@ -55,11 +55,26 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
             onBlur={createForceTwoDecimalsOnBlur(handleMeasureChange, 'installation_cost', index)}
           />
 
+          <label className="small-label">Repairs and Enabling Works</label>
+          <CurrencyInput
+            id={`ancillary_cost_${index}`}
+            name="ancillary_cost"
+            placeholder="Cost of additional works"
+            // Only format if the value is a number; otherwise, leave as is.
+            value={measure.ancillary_cost}
+            decimalsLimit={2} 
+            prefix="£"
+            onValueChange={(value) =>
+              handleMeasureChange(index, { target: { name: 'ancillary_cost', value } })
+            }
+            onBlur={createForceTwoDecimalsOnBlur(handleMeasureChange, 'ancillary_cost', index)}
+          />
+
           <label className="small-label">Annual savings</label>
           <CurrencyInput
             id={`annual_savings_${index}`}
             name="annual_savings"
-            placeholder="Annual Savings"
+            placeholder="Expected Annual Savings"
             value={
               typeof measure.annual_savings === 'number'
                 ? measure.annual_savings.toFixed(2)
@@ -77,7 +92,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
           <NumericFormat
             value={measure.lifetime}
             displayType={'input'}
-            placeholder="Measure lifetime"
+            placeholder="How long will the measure last?"
             suffix={' years'}
             decimalScale={0}
             onValueChange={(values) => {

@@ -3,6 +3,11 @@ const measureDefaults = {
     installation_cost: 500,
     annual_savings: 300,
     lifetime: 40,
+    existingLoftInsulation: {
+      mm100: 300,
+      uninsulated: 600,
+      mm270: 0 
+    } 
   },
   cavity_wall_insulation: {
     installation_cost: 1000,
@@ -28,6 +33,12 @@ const measureDefaults = {
     installation_cost: 7000,
     annual_savings: 250,
     lifetime: 20,
+    existingGlazing: {
+      single_glazing: 250,
+      double_glazing: 100,
+      secondary_glazing: 150,
+      triple_glazing: 0
+    }
   },
   high_efficiency_boiler: {
     installation_cost: 3000,
@@ -43,7 +54,7 @@ const measureDefaults = {
     installation_cost: 14000,
     annual_savings: 290,
     lifetime: 20,
-    existingSystems: {
+    existingHeatingSystem: {
       old_gas_boiler: 290,
       new_gas_boiler: -3,
       old_oil_boiler: 280,
@@ -59,6 +70,10 @@ const measureDefaults = {
     installation_cost: 7000,
     annual_savings: 650,
     lifetime: 25,
+    existingSystems: {
+      old_electric_storage_heaters: 850,
+      new_electric_storage_heaters: 750
+    }
   },
 };
 

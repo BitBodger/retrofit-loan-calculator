@@ -13,7 +13,7 @@ function BasicForm({
 }) {
   return (
     <form onSubmit={handleSubmit}>
-      <div className="basic-form-container">
+      <div className="form-container">
 
         {/* Installation Section */}
         <div className="form-section">
@@ -132,7 +132,7 @@ function BasicForm({
 
         {/* Upfront Costs Section */}
         <div className="form-section">
-          <h3>Upfront Costs</h3>
+          <h3>Upfront Payments</h3>
           <div className="form-group">
             <label>Down Payment</label>
             <CurrencyInput

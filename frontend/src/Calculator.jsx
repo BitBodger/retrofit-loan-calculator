@@ -2,9 +2,10 @@ import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import TabHeader from './TabHeader';
 import BasicForm from './BasicForm';
-import AdvancedForm from './AdvancedForm';
+import PropertyForm from './PropertyForm';
 import ResultsSummary from './ResultsSummary';
 import measureDefaults from './measureDefaults';
+import MeasuresForm from './MeasuresForm';
 
 function Calculator() {
   // -------------------------------
@@ -18,11 +19,16 @@ function Calculator() {
     loan_interest_rate: '6',
     loan_term: '5',
     discount_rate: '3',
-    energy_price_escalation: '5',
+    energy_price_escalation: '2',
     down_payment: '',
     government_subsidy: '',
-    home_size: 'medium',               // "small", "medium", or "large"
-    existing_heating_system: 'old_gas_boiler'
+    home_size: 'medium',
+    existing_heating_system: 'old_gas_boiler',
+    existing_glazing: '',
+    existing_doors: '',
+    existing_wall_insulation: '',
+    existing_loft_insulation: '100mm',
+    existing_floor_insulation: '',
   });
 
   // Flag for whether discounting should be applied
@@ -34,8 +40,11 @@ function Calculator() {
   // Active tab control ("basic" or "advanced")
   const [activeTab, setActiveTab] = useState("basic");
 
+  // Active tab control ("basic" or "advanced")
+  const [activeAdvancedTab, setActiveAdvancedTab] = useState("property");
+
   // Measures added in advanced mode (each with its own fields)
-  const [measures, setMeasures] = useState([]);
+  const [measures, setMeasures] = useState([""]);
 
   // -------------------------------
   // Handler Functions
@@ -79,12 +88,31 @@ function Calculator() {
         const multiplier = getHomeSizeMultiplier(inputs.home_size);
         const defaults = measureDefaults[value.toLowerCase()] || {};
         let defaultAnnualSavings = defaults.annual_savings;
-        if (defaults.existingSystems && inputs.existing_heating_system) {
+
+        // Check existing heating system to make more accurate prediction of savings
+        if (defaults.existingHeatingSystem && inputs.existing_heating_system) {
           const existingKey = inputs.existing_heating_system.toLowerCase();
-          if (defaults.existingSystems[existingKey] !== undefined) {
-            defaultAnnualSavings = defaults.existingSystems[existingKey];
+          if (defaults.existingHeatingSystem[existingKey] !== undefined) {
+            defaultAnnualSavings = defaults.existingHeatingSystem[existingKey];
           }
         }
+
+        // Check existing glazing to make more accurate prediction of savings
+        if (defaults.existingGlazing && inputs.existing_glazing) {
+          const existingKey = inputs.existing_glazing.toLowerCase();
+          if (defaults.existingGlazing[existingKey] !== undefined) {
+            defaultAnnualSavings = defaults.existingGlazing[existingKey];
+          }
+        }
+        
+        // Check existing loft insulation to make more accurate prediction of savings
+        if (defaults.existingLoftInsulation && inputs.existing_loft_insulation) {
+          const existingKey = inputs.existing_loft_insulation.toLowerCase();
+          if (defaults.existingLoftInsulation[existingKey] !== undefined) {
+            defaultAnnualSavings = defaults.existingLoftInsulation[existingKey];
+          }
+        }
+        
         newMeasures[index] = { 
           ...newMeasures[index],
           name: value,
@@ -118,17 +146,25 @@ function Calculator() {
   // useEffect Hooks for Derived Calculations
   // -------------------------------
 
-  // When the existing heating system changes, update each measure's default annual savings.
+  // When the existing property details change, update the default annual savings of certain measures.
   useEffect(() => {
-    const existingSystemKey = inputs.existing_heating_system.toLowerCase();
+    const existingHeatingSystemKey = inputs.existing_heating_system.toLowerCase();
+    const existingGlazingKey = inputs.existing_glazing.toLowerCase();
+    const existingLoftInsulationKey = inputs.existing_loft_insulation.toLowerCase();
     setMeasures(prevMeasures =>
       prevMeasures.map(m => {
         const measureDef = measureDefaults[m.name?.toLowerCase()];
         if (!measureDef) return m;
   
         let defaultAnnualSavings = measureDef.annual_savings;
-        if (measureDef.existingSystems && measureDef.existingSystems[existingSystemKey] !== undefined) {
-          defaultAnnualSavings = measureDef.existingSystems[existingSystemKey];
+        if (measureDef.existingHeatingSystem && measureDef.existingHeatingSystem[existingHeatingSystemKey] !== undefined) {
+          defaultAnnualSavings = measureDef.existingHeatingSystem[existingHeatingSystemKey];
+        }
+        if (measureDef.existingGlazing && measureDef.existingGlazing[existingGlazingKey] !== undefined) {
+          defaultAnnualSavings = measureDef.existingGlazing[existingGlazingKey];
+        }
+        if (measureDef.existingLoftInsulation && measureDef.existingLoftInsulation[existingLoftInsulationKey] !== undefined) {
+          defaultAnnualSavings = measureDef.existingLoftInsulation[existingLoftInsulationKey];
         }
         // Update the measure's annual_savings
         return {
@@ -137,7 +173,7 @@ function Calculator() {
         };
       })
     );
-  }, [inputs.existing_heating_system]);
+  }, [inputs.existing_heating_system, inputs.existing_glazing, inputs.existing_loft_insulation]);
 
   // When the advanced tab is active, derive basic input values from the measures.
   useEffect(() => {
@@ -263,10 +299,20 @@ function Calculator() {
   // -------------------------------
   return (
     <div className="calculator">
-      <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabHeader 
+        activeTab={activeTab} setActiveTab={setActiveTab} 
+        activeAdvancedTab={activeAdvancedTab} setActiveAdvancedTab={setActiveAdvancedTab}
+      />
 
-      {activeTab === "advanced" && (
-        <AdvancedForm
+      {activeTab === "advanced" && activeAdvancedTab == "property" && (
+        <PropertyForm
+          inputs={inputs}
+          handleChange={handleChange}
+        />
+      )}
+
+      {activeTab === "advanced" && activeAdvancedTab == "measures" && (
+        <MeasuresForm
           inputs={inputs}
           handleChange={handleChange}
           measures={measures}
@@ -274,6 +320,10 @@ function Calculator() {
           addNewMeasure={addNewMeasure}
           handleRemoveMeasure={handleRemoveMeasure}
         />
+      )}
+
+      {activeTab === "advanced" && (
+        <hr />
       )}
 
       <BasicForm
