@@ -20,7 +20,6 @@ app.add_middleware(
 class Measure(BaseModel):
     name: str
     installation_cost: float
-    repairs_and_enabling_works_cost: float
     annual_savings: float
     lifetime: int    
 

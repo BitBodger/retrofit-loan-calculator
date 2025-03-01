@@ -44,7 +44,10 @@ function Calculator() {
   const [activeAdvancedTab, setActiveAdvancedTab] = useState("property");
 
   // Measures added in advanced mode (each with its own fields)
-  const [measures, setMeasures] = useState([""]);
+  const [measures, setMeasures] = useState([]);
+
+  // Additional state for error messages
+  const [errorMessage, setErrorMessage] = useState('');
 
   // -------------------------------
   // Handler Functions
@@ -72,14 +75,14 @@ function Calculator() {
   const addNewMeasure = () => {
     setMeasures(prev => [
       ...prev,
-      { name: '', installation_cost: '', annual_savings: '', lifetime: '' }
+      { name: '', installation_cost: '', ancillary_cost: '', annual_savings: '', lifetime: '' }
     ]);
   };
 
   // Handler to update a measure at a specific index.
   // When the measure name is changed, look up defaults from measureDefaults,
-  // apply the home size multiplier, and if available override the default annual savings
-  // based on the existing heating system.
+  // apply the home size multiplier, and if available -
+  // override the default annual savings depending on existing details about the property.
   const handleMeasureChange = (index, e) => {
     const { name, value } = e.target;
     setMeasures(prevMeasures => {
@@ -179,7 +182,8 @@ function Calculator() {
   useEffect(() => {
     if (measures.length > 0 && activeTab === "advanced") {
       const derivedInstallationCost = measures.reduce(
-        (sum, measure) => sum + parseFloat(measure.installation_cost || 0),
+        (sum, measure) => sum + parseFloat(measure.installation_cost || 0)
+        + parseFloat(measure.ancillary_cost || 0),
         0
       );
       const derivedEnergySavings = measures.reduce(
@@ -271,8 +275,7 @@ function Calculator() {
       use_advanced_form: activeTab === "advanced",
       measures: validMeasures.map(measure => ({
         name: measure.name,
-        installation_cost: parseFloat(measure.installation_cost),
-        repairs_and_enabling_works_cost: parseFloat(measure.repairs_and_enabling_works_cost || 0),
+        installation_cost: parseFloat(measure.installation_cost) + parseFloat(measure.ancillary_cost || 0),
         annual_savings: parseFloat(measure.annual_savings),
         lifetime: parseInt(measure.lifetime, 10)
       }))
@@ -282,7 +285,10 @@ function Calculator() {
     
     axios
       .post('./api/calculate', payload)
-      .then(response => setResults(response.data))
+      .then(response => {
+        setResults(response.data);
+        setErrorMessage(''); // clear any existing errors
+      })
       .catch(error => console.error('Error making API call:', error));
   }, [inputs, activeTab, measures]);
 
@@ -291,6 +297,25 @@ function Calculator() {
   // -------------------------------
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const installationCost = parseFloat(inputs.installation_cost);
+    const installationLifetime = parseInt(inputs.installation_lifetime);
+
+    // Check if the essential fields are empty or 0
+    if (!installationCost || installationCost === 0) {
+      // Optionally, set an error state or simply return without calling recalc
+      console.error("Installation Cost must be provided and non-zero.");
+      setErrorMessage("Please provide valid value for Installation Cost");
+      return;
+    }
+
+    if (!installationLifetime || installationLifetime === 0) {
+      // Optionally, set an error state or simply return without calling recalc
+      console.error("Installation Lifetime must be provided and non-zero.");
+      setErrorMessage("Please provide valid value for Installation Lifetime");
+      return;
+    }
+
     recalc();
   };
 
@@ -334,6 +359,7 @@ function Calculator() {
         applyDiscount={applyDiscount}
         handleApplyDiscountChange={handleApplyDiscountChange}
         advancedActive={activeTab === "advanced"}
+        errorMessage={errorMessage}
       />
 
       {results && (

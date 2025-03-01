@@ -10,6 +10,7 @@ function BasicForm({
   handleSubmit, 
   applyDiscount,
   advancedActive,
+  errorMessage
 }) {
   return (
     <form onSubmit={handleSubmit}>
@@ -216,6 +217,8 @@ function BasicForm({
       </div>
       <div className="form-controls">
         <button type="submit">Calculate</button>
+        {/* Display error message if present */}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
       </div>
     </form>
   );
@@ -240,6 +243,7 @@ BasicForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   applyDiscount: PropTypes.bool.isRequired,
   advancedActive: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
 };
 
 export default BasicForm;

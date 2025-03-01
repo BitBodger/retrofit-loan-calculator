@@ -386,11 +386,11 @@ input, select {
 }
 
 .active-tabs button[data-dot="advanced"]::after, .inactive-tabs button[data-dot="advanced"]::after{
-  background-color: red;
+  background-color: green;
 }
 
 .active-tabs button[data-dot="basic"]::after, .inactive-tabs button[data-dot="basic"]::after {
-  background-color: green;
+  background-color: red;
 }
 
 .active-tabs button[data-dot="property"]::after, .inactive-tabs button[data-dot="property"]::after {
@@ -431,6 +431,12 @@ input, select {
 /* ========================================================= */
 /*                   TABLE & RESULTS STYLES                 */
 /* ========================================================= */
+
+.error-message {
+  color: red;
+  font-size: 0.8em;
+  font-weight: bold;
+}
 
 .summary-totals p {
   text-align: center;
