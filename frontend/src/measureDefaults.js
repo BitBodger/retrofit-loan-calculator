@@ -63,6 +63,7 @@ const measureDefaults = {
       new_lpg_boiler: 260,
       old_electric_storage_heaters: 1200,
       new_electric_storage_heaters: 700,
+      heat_pump: 0,
       coal: 650
     }
   },

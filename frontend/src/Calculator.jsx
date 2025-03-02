@@ -34,6 +34,9 @@ function Calculator() {
   // Flag for whether discounting should be applied
   const [applyDiscount, setApplyDiscount] = useState(true);
 
+  // Set loading state for showing loading dots.
+  const [loading, setLoading] = useState(false);
+
   // Calculation result returned from backend
   const [results, setResults] = useState(null);
 
@@ -44,7 +47,7 @@ function Calculator() {
   const [activeAdvancedTab, setActiveAdvancedTab] = useState("property");
 
   // Measures added in advanced mode (each with its own fields)
-  const [measures, setMeasures] = useState([]);
+  const [measures, setMeasures] = useState([{ name: '', installation_cost: '', ancillary_cost: '', annual_savings: '', lifetime: '' }]);
 
   // Additional state for error messages
   const [errorMessage, setErrorMessage] = useState('');
@@ -149,6 +152,32 @@ function Calculator() {
   // useEffect Hooks for Derived Calculations
   // -------------------------------
 
+  // When the advanced tab is active, derive basic input values from the measures.
+  useEffect(() => {
+    if (measures.length > 0 && activeTab === "advanced") {
+      const derivedInstallationCost = measures.reduce(
+        (sum, measure) => sum + parseFloat(measure.installation_cost || 0)
+        + parseFloat(measure.ancillary_cost || 0),
+        0
+      );
+      const derivedEnergySavings = measures.reduce(
+        (sum, measure) => sum + parseFloat(measure.annual_savings || 0),
+        0
+      );
+      const derivedInstallationLifetime = measures.reduce(
+        (max, measure) => Math.max(max, parseInt(measure.lifetime || 0, 10)),
+        0
+      );
+  
+      setInputs(prev => ({
+        ...prev,
+        installation_cost: derivedInstallationCost.toFixed(2),
+        energy_savings_per_year: derivedEnergySavings.toFixed(2),
+        installation_lifetime: derivedInstallationLifetime.toString(),
+      }));
+    }
+  }, [activeTab, measures]);
+
   // When the existing property details change, update the default annual savings of certain measures.
   useEffect(() => {
     const existingHeatingSystemKey = inputs.existing_heating_system.toLowerCase();
@@ -178,58 +207,30 @@ function Calculator() {
     );
   }, [inputs.existing_heating_system, inputs.existing_glazing, inputs.existing_loft_insulation]);
 
-  // When the advanced tab is active, derive basic input values from the measures.
-  useEffect(() => {
-    if (measures.length > 0 && activeTab === "advanced") {
-      const derivedInstallationCost = measures.reduce(
-        (sum, measure) => sum + parseFloat(measure.installation_cost || 0)
-        + parseFloat(measure.ancillary_cost || 0),
-        0
-      );
-      const derivedEnergySavings = measures.reduce(
-        (sum, measure) => sum + parseFloat(measure.annual_savings || 0),
-        0
-      );
-      const derivedInstallationLifetime = measures.reduce(
-        (max, measure) => Math.max(max, parseInt(measure.lifetime || 0, 10)),
-        0
-      );
   
-      setInputs(prev => ({
-        ...prev,
-        installation_cost: derivedInstallationCost.toFixed(2),
-        energy_savings_per_year: derivedEnergySavings.toFixed(2),
-        installation_lifetime: derivedInstallationLifetime.toString(),
-      }));
-    }
-  }, [activeTab, measures]);
 
-  // When the home size (or existing heating system) changes, update each measure's default values.
+  // When the home size changes, update each measure's default values.
   useEffect(() => {
     const multiplier = getHomeSizeMultiplier(inputs.home_size);
-    const existingSystemKey = inputs.existing_heating_system.toLowerCase();
     setMeasures(prevMeasures =>
       prevMeasures.map(measure => {
         if (measure.name && measureDefaults[measure.name.toLowerCase()]) {
           const defaults = measureDefaults[measure.name.toLowerCase()];
-          let defaultAnnualSavings = defaults.annual_savings;
-          if (defaults.existingSystems && defaults.existingSystems[existingSystemKey] !== undefined) {
-            defaultAnnualSavings = defaults.existingSystems[existingSystemKey];
-          }
           return {
             ...measure,
             installation_cost: defaults.installation_cost 
               ? parseFloat(defaults.installation_cost) * multiplier
               : measure.installation_cost,
-            annual_savings: defaultAnnualSavings 
-              ? parseFloat(defaultAnnualSavings) * multiplier
+            annual_savings: defaults.annual_savings 
+              ? parseFloat(defaults.annual_savings) * multiplier
               : measure.annual_savings,
           };
         }
         return measure;
       })
     );
-  }, [inputs.home_size, inputs.existing_heating_system]);
+  }, [inputs.home_size]);
+
 
   // -------------------------------
   // Derived Calculation for Loan Amount
@@ -244,6 +245,9 @@ function Calculator() {
   // recalc: Main Calculation Function
   // -------------------------------
   const recalc = useCallback(() => {
+    // Set loading state to TRUE to start loading dots
+    setLoading(true);
+
     // Log measures for debugging
     console.log("Original measures:", measures);
     
@@ -289,7 +293,9 @@ function Calculator() {
         setResults(response.data);
         setErrorMessage(''); // clear any existing errors
       })
-      .catch(error => console.error('Error making API call:', error));
+      .catch(error => console.error('Error making API call:', error))
+      .finally(() => setLoading(false));
+
   }, [inputs, activeTab, measures]);
 
   // -------------------------------
@@ -300,19 +306,32 @@ function Calculator() {
 
     const installationCost = parseFloat(inputs.installation_cost);
     const installationLifetime = parseInt(inputs.installation_lifetime);
+    const energySavings = parseFloat(inputs.energy_savings_per_year);
+    const upfrontPayments = parseFloat(inputs.down_payment) || "0" + parseFloat(inputs.government_subsidy) || "0";
 
     // Check if the essential fields are empty or 0
     if (!installationCost || installationCost === 0) {
       // Optionally, set an error state or simply return without calling recalc
-      console.error("Installation Cost must be provided and non-zero.");
       setErrorMessage("Please provide valid value for Installation Cost");
       return;
     }
 
     if (!installationLifetime || installationLifetime === 0) {
       // Optionally, set an error state or simply return without calling recalc
-      console.error("Installation Lifetime must be provided and non-zero.");
       setErrorMessage("Please provide valid value for Installation Lifetime");
+      return;
+    }
+
+    if (!energySavings) {
+      // Optionally, set an error state or simply return without calling recalc
+      setErrorMessage("Please provide valid value for Energy Savings Per Year");
+      return;
+    }
+
+
+    // Check if the sum or government subsidy and down payment are greater than the installation cost.
+    if (upfrontPayments > installationCost) {
+      setErrorMessage("The Upfront Payments are greater than the Installation Cost")
       return;
     }
 
@@ -360,6 +379,7 @@ function Calculator() {
         handleApplyDiscountChange={handleApplyDiscountChange}
         advancedActive={activeTab === "advanced"}
         errorMessage={errorMessage}
+        loading={loading}
       />
 
       {results && (

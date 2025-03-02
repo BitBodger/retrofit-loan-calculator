@@ -42,6 +42,7 @@ function PropertyForm({ inputs, handleChange }) {
             <option value="new_lpg_boiler">New LPG Boiler</option>
             <option value="old_electric_storage_heaters">Old Electric Storage Heaters</option>
             <option value="new_electric_storage_heaters">New Electric Storage Heaters</option>
+            <option value="heat_pump">Heat Pump</option>
             <option value="coal">Coal</option>
           </select>
           <p className="field-description">

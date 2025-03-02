@@ -1,9 +1,11 @@
-const LoadingSpinner = () => {
+const LoadingDots = () => {
   return (
-      <div className="spinner-container">
-          <div className="spinner"></div>
-      </div>
+      <div className="loader">
+      <span className="loader-dot"></span>
+      <span className="loader-dot"></span>
+      <span className="loader-dot"></span>
+    </div>
   );
 };
 
-export default LoadingSpinner;
+export default LoadingDots;

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import CurrencyInput from 'react-currency-input-field';
 import { NumericFormat } from 'react-number-format';
 import { createForceTwoDecimalsOnBlur } from './numberFormatUtils';
+import LoadingDots from './LoadingSpinner';
 
 function BasicForm({ 
   inputs, 
@@ -10,7 +11,8 @@ function BasicForm({
   handleSubmit, 
   applyDiscount,
   advancedActive,
-  errorMessage
+  errorMessage,
+  loading
 }) {
   return (
     <form onSubmit={handleSubmit}>
@@ -219,6 +221,7 @@ function BasicForm({
         <button type="submit">Calculate</button>
         {/* Display error message if present */}
         {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {loading && (<LoadingDots />)}
       </div>
     </form>
   );
@@ -244,6 +247,7 @@ BasicForm.propTypes = {
   applyDiscount: PropTypes.bool.isRequired,
   advancedActive: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
+  loading: PropTypes.bool,
 };
 
 export default BasicForm;
