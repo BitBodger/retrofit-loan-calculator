@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
+function Results({ results, applyDiscount, handleApplyDiscountChange }) {
   return (
     <div className="results-container">
       <div className="summary-container">
@@ -36,11 +36,17 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
                 <strong>Payback Year</strong>
                 {results.discounted_payback_time === 0 ? (
                   <span className="no-payback">
-                    Does not payback within installation lifetime
+                    Does not payback within<br />installation lifetime
                   </span>
                 ) : (
                   results.discounted_payback_time
                 )}
+              </p>
+              <p>
+                <strong>Most Out of Pocket</strong> £
+                {results.discounted_most_negative_cumulative_cashflow
+                  ? results.discounted_most_negative_cumulative_cashflow.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  : 'N/A'}
               </p>
             </>
           ) : (
@@ -78,6 +84,12 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
                 ) : (
                   results.payback_time
                 )}
+              </p>
+              <p>
+                <strong>Most Out of Pocket</strong> £
+                {results.most_negative_cumulative_cashflow
+                  ? results.most_negative_cumulative_cashflow.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  : 'N/A'}
               </p>
             </>
           )}
@@ -201,17 +213,19 @@ function ResultsSummary({ results, applyDiscount, handleApplyDiscountChange }) {
   );
 }
 
-ResultsSummary.propTypes = {
+Results.propTypes = {
   results: PropTypes.shape({
     total_cost: PropTypes.number,
     total_interest: PropTypes.number,
     total_savings: PropTypes.number,
     net_savings: PropTypes.number,
     payback_time: PropTypes.number,
+    most_negative_cumulative_cashflow: PropTypes.number,
     discounted_total_cost: PropTypes.number,
     discounted_total_savings: PropTypes.number,
     discounted_net_savings: PropTypes.number,
     discounted_payback_time: PropTypes.number,
+    discounted_most_negative_cumulative_cashflow: PropTypes.number,
     yearly_details: PropTypes.arrayOf(PropTypes.shape({
       year: PropTypes.number,
       annual_loan_payment: PropTypes.number,
@@ -231,4 +245,4 @@ ResultsSummary.propTypes = {
 };
 
 
-export default ResultsSummary;
+export default Results;

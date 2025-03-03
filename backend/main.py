@@ -60,6 +60,10 @@ class CalculationResponse(BaseModel):
     discounted_total_savings: float
     discounted_net_savings: float
     discounted_payback_time: int
+    most_negative_cumulative_cashflow: float
+    most_negative_cumulative_cashflow_year: int
+    discounted_most_negative_cumulative_cashflow: float
+    discounted_most_negative_cumulative_cashflow_year: int
 
 # -----------------------------
 # Helper Functions
@@ -107,10 +111,16 @@ async def calculate(request: CalculationRequest):
     total_energy_savings = 0.0
     total_loan_payments = 0.0
     total_interest = 0.0
+    total_net_savings = 0.0
+    most_negative_cumulative_cashflow = 0.0
+    most_negative_cumulative_cashflow_year = 0
     payback_time = 0
 
     total_discounted_energy_savings = 0.0
     total_discounted_loan_payments = 0.0
+    total_discounted_net_savings = 0.0
+    discounted_most_negative_cumulative_cashflow = 0.0
+    discounted_most_negative_cumulative_cashflow_year = 0
     discounted_payback_time = 0
 
     current_month = 0  # Tracks the total number of months processed.
@@ -164,9 +174,8 @@ async def calculate(request: CalculationRequest):
         # Compute net cash flow for the year.
         net_cash_flow = annual_energy_savings - annual_loan_payment
 
-        # If there is no loan (loan_amount == 0) then subtract the down payment
-        # in the first year (to reflect the immediate cost).
-        if loan_amount == 0 and year == 1:
+        # Subtract down payment from net cashflow in the first year (to reflect the immediate cost).
+        if year == 1:
             net_cash_flow -= request.down_payment
 
         discount_factor = 1 / ((1 + request.discount_rate) ** year)
@@ -181,11 +190,20 @@ async def calculate(request: CalculationRequest):
 
         total_discounted_energy_savings += annual_energy_savings * discount_factor
         total_discounted_loan_payments += annual_loan_payment * discount_factor
-
+        
+        # Find payback year - the year that your cumulative net cashflow turns positive.
         if cumulative_net_cash_flow >= 0 and payback_time == 0:
             payback_time = year
         if discounted_cumulative_net_cash_flow >= 0 and discounted_payback_time == 0:
             discounted_payback_time = year
+
+        # Find most negative cumulative net cash flow and year
+        if cumulative_net_cash_flow < most_negative_cumulative_cashflow:
+            most_negative_cumulative_cashflow = cumulative_net_cash_flow
+            most_negative_cumulative_cashflow_year = year
+        if discounted_cumulative_net_cash_flow < discounted_most_negative_cumulative_cashflow:
+            disccounted_most_negative_cumulative_cashflow = discounted_cumulative_net_cash_flow
+            discounted_most_negative_cumulative_cashflow_year = year
 
         yearly_detail = YearlyCashFlow(
             year=year,
@@ -227,6 +245,10 @@ async def calculate(request: CalculationRequest):
         discounted_total_savings=round(discounted_total_savings, 2),
         discounted_net_savings=round(discounted_net_savings, 2),
         discounted_payback_time=discounted_payback_time,
-        total_interest=round(total_interest, 2)
+        total_interest=round(total_interest, 2),
+        most_negative_cumulative_cashflow=round(most_negative_cumulative_cashflow, 2),
+        most_negative_cumulative_cashflow_year=most_negative_cumulative_cashflow_year,
+        discounted_most_negative_cumulative_cashflow=round(discounted_most_negative_cumulative_cashflow, 2),
+        discounted_most_negative_cumulative_cashflow_year=discounted_most_negative_cumulative_cashflow_year,
     )
 

@@ -1,0 +1,57 @@
+/* ========================================================= */
+/*                   LOADING SPINNER                         */
+/* ========================================================= */
+
+/* Loader container */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* ensure it appears on top */
+}
+
+/* Each dot */
+.loader-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+  opacity: 0; /* Start hidden */
+  animation: fadeIn 0.5s forwards; /* Run the fadeIn animation once and keep the final state */
+}
+
+/* Stagger the animation delays so the dots appear in order */
+.loader-dot:nth-child(1) {
+  animation-delay: 0s;
+  background-color: green;
+}
+.loader-dot:nth-child(2) {
+  animation-delay: 0.5s;
+  background-color: red;
+
+}
+.loader-dot:nth-child(3) {
+  animation-delay: 1s;
+  background-color: blue;
+}
+
+/* Keyframes to fade in the dot */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

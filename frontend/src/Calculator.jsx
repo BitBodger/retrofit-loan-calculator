@@ -3,7 +3,7 @@ import axios from 'axios';
 import TabHeader from './TabHeader';
 import BasicForm from './BasicForm';
 import PropertyForm from './PropertyForm';
-import ResultsSummary from './ResultsSummary';
+import Results from './Results';
 import measureDefaults from './measureDefaults';
 import MeasuresForm from './MeasuresForm';
 
@@ -290,6 +290,7 @@ function Calculator() {
     axios
       .post('./api/calculate', payload)
       .then(response => {
+        console.log("Response:", response.data);
         setResults(response.data);
         setErrorMessage(''); // clear any existing errors
       })
@@ -383,7 +384,7 @@ function Calculator() {
       />
 
       {results && (
-        <ResultsSummary
+        <Results
           results={results}
           applyDiscount={applyDiscount}
           handleApplyDiscountChange={handleApplyDiscountChange}
