@@ -10,7 +10,7 @@ function Footer() {
       </p>
       <p>
         I would love to know if you found this calculator useful or not. 
-        Please send reviews to <a href="mailto:info@retrofitloancalculator.co.uk">info@retrofitloancalculator.co.uk</a>
+        Please send reviews to <a href="mailto:info@retrofitsavingscalculator.co.uk">info@retrofitsavingscalculator.co.uk</a>
       </p>
     </footer>
 
