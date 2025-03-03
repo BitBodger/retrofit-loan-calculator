@@ -20,3 +20,9 @@ export function createForceTwoDecimalsOnBlur(handleChange, fieldName, index = nu
     }
   };
 }
+
+export function formatCurrency (value) {
+  const formatted = Math.abs(value).toLocaleString('en-GB', { minimumFractionDigits: 2 });
+  return value < 0 ? `-£${formatted}` : `£${formatted}`;
+};
+

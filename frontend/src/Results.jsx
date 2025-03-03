@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { formatCurrency } from './numberFormatUtils';
 
 function Results({ results, applyDiscount, handleApplyDiscountChange }) {
   return (
@@ -9,27 +10,27 @@ function Results({ results, applyDiscount, handleApplyDiscountChange }) {
           {applyDiscount ? (
             <>
               <p>
-                <strong>Total Cost</strong> £
+                <strong>Total Cost</strong>
                 {results.total_cost
-                  ? results.discounted_total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.discounted_total_cost)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Interest</strong> £
+                <strong>Total Interest</strong>
                 {results.total_interest
-                  ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.total_interest)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Savings</strong> £
+                <strong>Total Savings</strong>
                 {results.total_savings
-                  ? results.discounted_total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.discounted_total_savings)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Net Savings</strong> £
+                <strong>Net Savings</strong>
                 {results.net_savings
-                  ? results.discounted_net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.discounted_net_savings)
                   : 'N/A'}
               </p>
               <p>
@@ -43,36 +44,40 @@ function Results({ results, applyDiscount, handleApplyDiscountChange }) {
                 )}
               </p>
               <p>
-                <strong>Most Out of Pocket</strong> £
-                {results.discounted_most_negative_cumulative_cashflow
-                  ? results.discounted_most_negative_cumulative_cashflow.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                  : 'N/A'}
+                <strong>Most Out of Pocket</strong>
+                {results.discounted_most_negative_cumulative_cashflow ? (
+                  <>
+                    {formatCurrency(results.discounted_most_negative_cumulative_cashflow)}
+                    <br />
+                    {" in year " + results.discounted_most_negative_cumulative_cashflow_year}
+                  </>
+                ) : 'N/A'}
               </p>
             </>
           ) : (
             <>
               <p>
-                <strong>Total Cost</strong> £
+                <strong>Total Cost</strong>
                 {results.total_cost
-                  ? results.total_cost.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.total_cost)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Interest</strong> £
+                <strong>Total Interest</strong>
                 {results.total_interest
-                  ? results.total_interest.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.total_interest)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Total Savings</strong> £
+                <strong>Total Savings</strong>
                 {results.total_savings
-                  ? results.total_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.total_savings)
                   : 'N/A'}
               </p>
               <p>
-                <strong>Net Savings</strong> £
+                <strong>Net Savings</strong>
                 {results.net_savings
-                  ? results.net_savings.toLocaleString('en-GB', { minimumFractionDigits: 2 })
+                  ? formatCurrency(results.net_savings)
                   : 'N/A'}
               </p>
               <p>
@@ -86,10 +91,14 @@ function Results({ results, applyDiscount, handleApplyDiscountChange }) {
                 )}
               </p>
               <p>
-                <strong>Most Out of Pocket</strong> £
-                {results.most_negative_cumulative_cashflow
-                  ? results.most_negative_cumulative_cashflow.toLocaleString('en-GB', { minimumFractionDigits: 2 })
-                  : 'N/A'}
+                <strong>Most Out of Pocket</strong>
+                {results.most_negative_cumulative_cashflow ? (
+                  <>
+                    {formatCurrency(results.most_negative_cumulative_cashflow)}
+                    <br />
+                    {" in year " + results.most_negative_cumulative_cashflow_year}
+                  </>
+                ) : 'N/A'}
               </p>
             </>
           )}
@@ -141,65 +150,38 @@ function Results({ results, applyDiscount, handleApplyDiscountChange }) {
                 <tr key={index}>
                   <td>{detail.year}</td>
                   <td>
-                    £
-                    {detail.annual_loan_payment.toLocaleString('en-GB', {
-                      minimumFractionDigits: 2
-                    })}
+                    {formatCurrency(detail.annual_loan_payment)}
                   </td>
                   <td>
-                    £
                     {Math.abs(detail.remaining_loan_balance) < 0.01
-                      ? '0.00'
-                      : detail.remaining_loan_balance.toLocaleString('en-GB', {
-                          minimumFractionDigits: 2
-                        })}
+                      ? '£0.00'
+                      : formatCurrency(detail.remaining_loan_balance)}
                   </td>
                   <td>
-                    £
-                    {detail.interest_portion.toLocaleString('en-GB', {
-                      minimumFractionDigits: 2
-                    })}
+                    {formatCurrency(detail.interest_portion)}
                   </td>
                   <td>
-                    £
-                    {detail.principal_portion.toLocaleString('en-GB', {
-                      minimumFractionDigits: 2
-                    })}
+                    {formatCurrency(detail.principal_portion)}
                   </td>
                   <td>
-                    £
-                    {detail.annual_energy_savings.toLocaleString('en-GB', {
-                      minimumFractionDigits: 2
-                    })}
+                    {formatCurrency(detail.annual_energy_savings)}
                   </td>
                   {applyDiscount ? (
                     <>
                       <td>
-                        £
-                        {detail.discounted_net_cash_flow.toLocaleString('en-GB', {
-                          minimumFractionDigits: 2
-                        })}
+                        {formatCurrency(detail.discounted_net_cash_flow)}
                       </td>
                       <td>
-                        £
-                        {detail.discounted_cumulative_net_cash_flow.toLocaleString('en-GB', {
-                          minimumFractionDigits: 2
-                        })}
+                        {formatCurrency(detail.discounted_cumulative_net_cash_flow)}
                       </td>
                     </>
                   ) : (
                     <>
                       <td>
-                        £
-                        {detail.net_cash_flow.toLocaleString('en-GB', {
-                          minimumFractionDigits: 2
-                        })}
+                        {formatCurrency(detail.net_cash_flow)}
                       </td>
                       <td>
-                        £
-                        {detail.cumulative_net_cash_flow.toLocaleString('en-GB', {
-                          minimumFractionDigits: 2
-                        })}
+                        {formatCurrency(detail.cumulative_net_cash_flow)}
                       </td>
                     </>
                   )}
@@ -221,11 +203,13 @@ Results.propTypes = {
     net_savings: PropTypes.number,
     payback_time: PropTypes.number,
     most_negative_cumulative_cashflow: PropTypes.number,
+    most_negative_cumulative_cashflow_year: PropTypes.number,
     discounted_total_cost: PropTypes.number,
     discounted_total_savings: PropTypes.number,
     discounted_net_savings: PropTypes.number,
     discounted_payback_time: PropTypes.number,
     discounted_most_negative_cumulative_cashflow: PropTypes.number,
+    discounted_most_negative_cumulative_cashflow_year: PropTypes.number,
     yearly_details: PropTypes.arrayOf(PropTypes.shape({
       year: PropTypes.number,
       annual_loan_payment: PropTypes.number,

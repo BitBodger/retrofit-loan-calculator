@@ -82,25 +82,17 @@ def pmt(rate: float, nper: int, pv: float) -> float:
 # -----------------------------
 @app.post("/api/calculate", response_model=CalculationResponse)
 async def calculate(request: CalculationRequest):
-    # Calculate the initial loan amount from the basic installation cost,
-    # subtracting down payment and government subsidy.
-    # In basic mode, this comes directly from the basic inputs.
-    # In advanced mode, the frontend sends derived values.
+    # Calculate the initial loan amount.
     loan_amount = request.installation_cost - request.down_payment - request.government_subsidy
 
-    # If the loan amount is zero or negative, return an error.
     if loan_amount < 0:
         raise HTTPException(status_code=400, detail="Loan amount must be positive. Check down payment and subsidy.")
 
     # Convert the annual interest rate to a monthly rate.
     monthly_rate = request.loan_interest_rate / 12.0
-    # Determine the total number of monthly payments.
     total_months = request.loan_term * 12
-
-    # Calculate the fixed monthly payment using the PMT function.
     monthly_payment = -pmt(monthly_rate, total_months, loan_amount)
 
-    # Initialize remaining balance to the full loan amount.
     remaining_balance = loan_amount
 
     # Initialize accumulators for yearly details and overall totals.
@@ -111,21 +103,20 @@ async def calculate(request: CalculationRequest):
     total_energy_savings = 0.0
     total_loan_payments = 0.0
     total_interest = 0.0
-    total_net_savings = 0.0
-    most_negative_cumulative_cashflow = 0.0
-    most_negative_cumulative_cashflow_year = 0
-    payback_time = 0
 
     total_discounted_energy_savings = 0.0
     total_discounted_loan_payments = 0.0
-    total_discounted_net_savings = 0.0
+
+    most_negative_cumulative_cashflow = 0.0
+    most_negative_cumulative_cashflow_year = 0
     discounted_most_negative_cumulative_cashflow = 0.0
     discounted_most_negative_cumulative_cashflow_year = 0
+    payback_time = 0
     discounted_payback_time = 0
 
     current_month = 0  # Tracks the total number of months processed.
 
-        # Loop over each year of the installation's lifetime.
+    # Loop over each year of the installation's lifetime.
     for year in range(1, request.installation_lifetime + 1):
         annual_loan_payment = 0.0
         annual_interest = 0.0
@@ -144,10 +135,9 @@ async def calculate(request: CalculationRequest):
             else:
                 break
 
-        # Calculate base energy savings using the basic input and escalation.
+        # Calculate base energy savings with escalation.
         base_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
         
-        # Determine annual energy savings based on form mode:
         if request.use_advanced_form and request.measures:
             measure_energy_savings = 0.0
             for measure in request.measures:
@@ -173,8 +163,6 @@ async def calculate(request: CalculationRequest):
 
         # Compute net cash flow for the year.
         net_cash_flow = annual_energy_savings - annual_loan_payment
-
-        # Subtract down payment from net cashflow in the first year (to reflect the immediate cost).
         if year == 1:
             net_cash_flow -= request.down_payment
 
@@ -191,18 +179,16 @@ async def calculate(request: CalculationRequest):
         total_discounted_energy_savings += annual_energy_savings * discount_factor
         total_discounted_loan_payments += annual_loan_payment * discount_factor
         
-        # Find payback year - the year that your cumulative net cashflow turns positive.
         if cumulative_net_cash_flow >= 0 and payback_time == 0:
             payback_time = year
         if discounted_cumulative_net_cash_flow >= 0 and discounted_payback_time == 0:
             discounted_payback_time = year
 
-        # Find most negative cumulative net cash flow and year
         if cumulative_net_cash_flow < most_negative_cumulative_cashflow:
             most_negative_cumulative_cashflow = cumulative_net_cash_flow
             most_negative_cumulative_cashflow_year = year
         if discounted_cumulative_net_cash_flow < discounted_most_negative_cumulative_cashflow:
-            disccounted_most_negative_cumulative_cashflow = discounted_cumulative_net_cash_flow
+            discounted_most_negative_cumulative_cashflow = discounted_cumulative_net_cash_flow
             discounted_most_negative_cumulative_cashflow_year = year
 
         yearly_detail = YearlyCashFlow(
@@ -220,15 +206,14 @@ async def calculate(request: CalculationRequest):
         )
         yearly_details.append(yearly_detail)
 
-
     # -------------------------------
-    # Summary Totals Calculations
+    # Summary Totals Calculations (Using per-year discounted values)
     # -------------------------------
-    total_cost = request.down_payment + loan_amount + total_interest
+    total_cost = request.down_payment + total_loan_payments
     total_savings = total_energy_savings
     net_savings = total_savings - total_cost
 
-    discounted_total_cost = request.down_payment + ((loan_amount + total_interest) / ((1 + request.discount_rate) ** request.loan_term))
+    discounted_total_cost = request.down_payment + total_discounted_loan_payments
     discounted_total_savings = total_discounted_energy_savings
     discounted_net_savings = discounted_total_savings - discounted_total_cost
 
@@ -251,4 +236,3 @@ async def calculate(request: CalculationRequest):
         discounted_most_negative_cumulative_cashflow=round(discounted_most_negative_cumulative_cashflow, 2),
         discounted_most_negative_cumulative_cashflow_year=discounted_most_negative_cumulative_cashflow_year,
     )
-
