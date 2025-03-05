@@ -25,12 +25,13 @@ class Measure(BaseModel):
 
 class CalculationRequest(BaseModel):
     installation_cost: float
-    installation_lifetime: int 
-    energy_savings_per_year: float  
+    installation_lifetime: int
+    energy_savings_per_year: float 
     loan_interest_rate: float  
     loan_term: int              
-    discount_rate: float        
-    energy_price_escalation: float
+    discount_rate: float   
+    basic_energy_price_escalation: float     
+    energy_price_escalation: list
     down_payment: float
     government_subsidy: float
     use_advanced_form: bool
@@ -84,7 +85,6 @@ def pmt(rate: float, nper: int, pv: float) -> float:
 async def calculate(request: CalculationRequest):
     # Calculate the initial loan amount.
     loan_amount = request.installation_cost - request.down_payment - request.government_subsidy
-
     if loan_amount < 0:
         raise HTTPException(status_code=400, detail="Loan amount must be positive. Check down payment and subsidy.")
 
@@ -118,6 +118,11 @@ async def calculate(request: CalculationRequest):
 
     # Loop over each year of the installation's lifetime.
     for year in range(1, request.installation_lifetime + 1):
+        # Compute a cumulative escalation factor for the current year.
+        cumulative_factor = 1.0
+        for i in range(year):
+            cumulative_factor *= (1 + request.energy_price_escalation[i] / 100)
+
         annual_loan_payment = 0.0
         annual_interest = 0.0
         annual_principal = 0.0
@@ -135,14 +140,12 @@ async def calculate(request: CalculationRequest):
             else:
                 break
 
-        # Calculate base energy savings with escalation.
-        base_energy_savings = request.energy_savings_per_year * ((1 + request.energy_price_escalation) ** (year - 1))
-        
+        # Calculate annual energy savings using the cumulative escalation factor.
         if request.use_advanced_form and request.measures:
             measure_energy_savings = 0.0
             for measure in request.measures:
                 if measure.name.strip() and year <= measure.lifetime:
-                    measure_energy_savings += measure.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
+                    measure_energy_savings += measure.annual_savings * cumulative_factor
             annual_energy_savings = measure_energy_savings
 
             combo_definitions = {
@@ -153,13 +156,14 @@ async def calculate(request: CalculationRequest):
             for combo, bonus_pct in combo_definitions.items():
                 if all(any(m.name.lower() == measure and year <= m.lifetime for m in request.measures) for measure in combo):
                     combo_savings = sum(
-                        m.annual_savings * ((1 + request.energy_price_escalation) ** (year - 1))
+                        m.annual_savings * cumulative_factor
                         for m in request.measures if m.name.lower() in combo and year <= m.lifetime
                     )
                     combined_savings_bonus += bonus_pct * combo_savings
             annual_energy_savings += combined_savings_bonus
         else:
-            annual_energy_savings = base_energy_savings
+            # For the non-advanced form, apply the cumulative escalation factor to the base savings.
+            annual_energy_savings = request.energy_savings_per_year * ((1 + request.basic_energy_price_escalation) ** year)
 
         # Compute net cash flow for the year.
         net_cash_flow = annual_energy_savings - annual_loan_payment
@@ -178,7 +182,7 @@ async def calculate(request: CalculationRequest):
 
         total_discounted_energy_savings += annual_energy_savings * discount_factor
         total_discounted_loan_payments += annual_loan_payment * discount_factor
-        
+
         if cumulative_net_cash_flow >= 0 and payback_time == 0:
             payback_time = year
         if discounted_cumulative_net_cash_flow >= 0 and discounted_payback_time == 0:
@@ -206,9 +210,7 @@ async def calculate(request: CalculationRequest):
         )
         yearly_details.append(yearly_detail)
 
-    # -------------------------------
     # Summary Totals Calculations (Using per-year discounted values)
-    # -------------------------------
     total_cost = request.down_payment + total_loan_payments
     total_savings = total_energy_savings
     net_savings = total_savings - total_cost
@@ -217,9 +219,6 @@ async def calculate(request: CalculationRequest):
     discounted_total_savings = total_discounted_energy_savings
     discounted_net_savings = discounted_total_savings - discounted_total_cost
 
-    # -------------------------------
-    # Return the Calculation Response
-    # -------------------------------
     return CalculationResponse(
         yearly_details=yearly_details,
         total_cost=round(total_cost, 2),

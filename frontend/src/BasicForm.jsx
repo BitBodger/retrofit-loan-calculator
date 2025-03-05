@@ -96,7 +96,7 @@ function BasicForm({
               }
             />
             <p className="field-description">
-              What is the interest rate of the loan you&apos;re considering taking out
+              The interest rate of the loan you&apos;re considering taking out
             </p>
           </div>
           
@@ -112,7 +112,7 @@ function BasicForm({
               }
             />
             <p className="field-description">
-              Over what period will the loan be repaid
+              The period in which the loan will be repaid
             </p>
           </div>
           
@@ -128,7 +128,7 @@ function BasicForm({
               readOnly
             />
             <p className="field-description">
-              The total you are borrowing - this is the installation cost minus any down payment or government subsidy
+              The total you are borrowing - this is the installation cost less any down payment or government subsidy
             </p>
           </div>
         </div>
@@ -176,45 +176,44 @@ function BasicForm({
         </div>
 
         {/* Economic Conditions Section */}
-        {advancedActive && (
-          <div className="form-section">
-            <h3>Economic Conditions</h3>
-            <div className="form-group">
-              <label>Energy Price Escalation</label>
-              <NumericFormat
-                value={inputs.energy_price_escalation}
-                displayType={'input'}
-                suffix={'%'}
-                decimalScale={1}
-                fixedDecimalScale={true}
-                onValueChange={(values) =>
-                  handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
-                }
-              />
-              <p className="field-description">
-                The rate at which energy prices are expected to increase year on year for the duration of the installation
-              </p>
-            </div>
-            
-            <div className="form-group">
-              <label>Discount Rate</label>
-              <NumericFormat
-                value={inputs.discount_rate}
-                displayType={'input'}
-                suffix={'%'}
-                decimalScale={1}
-                fixedDecimalScale={true}
-                onValueChange={(values) =>
-                  handleChange({ target: { name: 'discount_rate', value: values.value } })
-                }
-                disabled={!applyDiscount}
-              />
-              <p className="field-description">
-                The rate at which money devalues over time considering inflation, savings interest and/or borrowing costs
-              </p>
-            </div>
+        <div className="form-section">
+          <h3>Economic Conditions</h3>
+          {!advancedActive && (
+          <div className="form-group">
+            <label>Energy Price Escalation</label>
+            <NumericFormat
+              value={inputs.basic_energy_price_escalation}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'energy_price_escalation', value: values.value } })
+              }
+            />
+            <p className="field-description">
+              The rate at which energy prices are expected to increase year on year for the duration of the installation
+            </p>
+          </div>)}
+          
+          <div className="form-group">
+            <label>Discount Rate</label>
+            <NumericFormat
+              value={inputs.discount_rate}
+              displayType={'input'}
+              suffix={'%'}
+              decimalScale={1}
+              fixedDecimalScale={true}
+              onValueChange={(values) =>
+                handleChange({ target: { name: 'discount_rate', value: values.value } })
+              }
+              disabled={!applyDiscount}
+            />
+            <p className="field-description">
+              The rate at which money devalues over time considering inflation, savings interest and/or borrowing costs
+            </p>
           </div>
-        )}
+        </div>
 
       </div>
       <div className="form-controls">
@@ -235,7 +234,7 @@ BasicForm.propTypes = {
     loan_interest_rate: PropTypes.string,
     loan_term: PropTypes.string,
     discount_rate: PropTypes.string,
-    energy_price_escalation: PropTypes.string,
+    basic_energy_price_escalation: PropTypes.string,
     down_payment: PropTypes.string,
     government_subsidy: PropTypes.string,
     home_size: PropTypes.string,

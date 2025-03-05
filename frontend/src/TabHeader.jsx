@@ -37,11 +37,17 @@ function TabHeader({ activeTab, setActiveTab, activeAdvancedTab, setActiveAdvanc
             >
               Measures
             </button>
+            <button 
+              data-dot="energy"
+              onClick={() => setActiveAdvancedTab("energy")} 
+              className={activeAdvancedTab === "energy" ? "active" : ""}
+            >
+              Energy Prices
+            </button>
             <hr />
           </div>
         )
       }
-
 
     </div> 
   );
