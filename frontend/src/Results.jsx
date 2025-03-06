@@ -14,12 +14,12 @@ function Results({
     <div className="results-container">
       <ResultsTabHeader 
         activeResultsTab={activeResultsTab}
-        setActiveResultsTab={setActiveResultsTab}      
+        setActiveResultsTab={setActiveResultsTab}
+        applyDiscount={applyDiscount} 
+        handleApplyDiscountChange={handleApplyDiscountChange} 
       />
       {activeResultsTab === "summary" && (
       <div className="summary-container">
-        <h2>Summary</h2>
-
         <div className="summary-grid">
           {/* Totals Card */}
           <div className="summary-card">
@@ -53,7 +53,7 @@ function Results({
             <div className="summary-card-content"> 
               <div className="outcomes-grid">
                 <div>
-                  <strong>Payback Year:</strong> 
+                  <strong>Payback Year:</strong>&nbsp;
                   {applyDiscount
                     ? results.discounted_payback_time === 0
                       ? <div className="warning-badge">Does not pay back within installation lifetime</div>
@@ -63,7 +63,7 @@ function Results({
                       : results.payback_time}
                 </div>
                 <div>
-                  <strong>Most Out of Pocket:</strong>
+                  <strong>Most Out of Pocket:</strong>&nbsp;
                   {applyDiscount
                     ? results.discounted_most_negative_cumulative_cashflow
                       ? <>
@@ -92,23 +92,6 @@ function Results({
 
       {activeResultsTab === "forecast" && results.yearly_details && (
         <div className="results-table-wrapper">
-          <div className="results-header">
-            <h1>Savings Forecast</h1>
-            <div className="checkbox-wrapper">
-              <input
-                type="checkbox"
-                name="apply_discount"
-                checked={applyDiscount}
-                onChange={handleApplyDiscountChange}
-              />
-              <label>
-                Apply Discounting:{' '}
-                <span className="DiscountExplainer">
-                  Discounting converts future cash flows into their present-day value, accounting for the time value of money.
-                </span>
-              </label>
-            </div>
-          </div>
           <table>
             <thead>
               <tr>
