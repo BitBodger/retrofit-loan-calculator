@@ -37,8 +37,8 @@ function Calculator() {
     existing_heating_system: 'old_gas_boiler',
     existing_glazing: '',
     existing_doors: '',
-    existing_wall_insulation: '',
-    existing_loft_insulation: '100mm',
+    existing_wall_insulation: 'none',
+    existing_loft_insulation: 'mm100',
     existing_floor_insulation: '',
   });
 
@@ -51,6 +51,7 @@ function Calculator() {
     { name: '', installation_cost: '', ancillary_cost: '', annual_savings: '', lifetime: '' }
   ]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [activeResultsTab, setActiveResultsTab] = useState("summary");
 
   // Handler functions
   const handleApplyDiscountChange = (e) => {
@@ -364,6 +365,8 @@ function Calculator() {
           results={results}
           applyDiscount={applyDiscount}
           handleApplyDiscountChange={handleApplyDiscountChange}
+          activeResultsTab={activeResultsTab}
+          setActiveResultsTab={setActiveResultsTab}
         />
       )}
     </div>

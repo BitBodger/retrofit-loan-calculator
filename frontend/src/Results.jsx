@@ -1,110 +1,96 @@
 import PropTypes from 'prop-types'
 import { formatCurrency } from './numberFormatUtils';
+import ResultsTabHeader from './ResultsTabHeader.jsx';
 
-function Results({ results, applyDiscount, handleApplyDiscountChange }) {
+function Results({ 
+  results, 
+  applyDiscount, 
+  handleApplyDiscountChange, 
+  activeResultsTab, 
+  setActiveResultsTab 
+}) {
+
   return (
     <div className="results-container">
+      <ResultsTabHeader 
+        activeResultsTab={activeResultsTab}
+        setActiveResultsTab={setActiveResultsTab}      
+      />
+      {activeResultsTab === "summary" && (
       <div className="summary-container">
         <h2>Summary</h2>
-        <div className="summary-totals">
-          {applyDiscount ? (
-            <>
-              <p>
-                <strong>Total Cost</strong>
-                {results.total_cost
-                  ? formatCurrency(results.discounted_total_cost)
-                  : 'N/A'}
+
+        <div className="summary-grid">
+          {/* Totals Card */}
+          <div className="summary-card">
+            <div className="summary-card-content">
+              <p><strong>Total Cost:</strong> {formatCurrency(applyDiscount ? results.discounted_total_cost : results.total_cost) || 'N/A'}</p>
+              <p><strong>Total Interest:</strong> {formatCurrency(results.total_interest) || 'N/A'}</p>
+              <p><strong>Total Savings:</strong> {formatCurrency(applyDiscount ? results.discounted_total_savings : results.total_savings) || 'N/A'}</p>
+            </div>
+
+            <div className="summary-card-description">
+              <h2>Costs & Savings</h2>
+            </div>    
+          </div>
+
+          {/* Net Savings Card */}
+          <div className="summary-card">
+            <div className={`summary-card-content ${results.net_savings < 0 ? 'negative' : 'positive'}`}>
+              <p className={`net-savings-value ${results.net_savings < 0 ? 'negative' : 'positive'}`}>
+                {formatCurrency(applyDiscount ? results.discounted_net_savings : results.net_savings) || 'N/A'}
               </p>
-              <p>
-                <strong>Total Interest</strong>
-                {results.total_interest
-                  ? formatCurrency(results.total_interest)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Total Savings</strong>
-                {results.total_savings
-                  ? formatCurrency(results.discounted_total_savings)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Net Savings</strong>
-                {results.net_savings
-                  ? formatCurrency(results.discounted_net_savings)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Payback Year</strong>
-                {results.discounted_payback_time === 0 ? (
-                  <span className="no-payback">
-                    Does not payback within<br />installation lifetime
-                  </span>
-                ) : (
-                  results.discounted_payback_time
-                )}
-              </p>
-              <p>
-                <strong>Most Out of Pocket</strong>
-                {results.discounted_most_negative_cumulative_cashflow ? (
-                  <>
-                    {formatCurrency(results.discounted_most_negative_cumulative_cashflow)}
-                    <br />
-                    {" in year " + results.discounted_most_negative_cumulative_cashflow_year}
-                  </>
-                ) : 'N/A'}
-              </p>
-            </>
-          ) : (
-            <>
-              <p>
-                <strong>Total Cost</strong>
-                {results.total_cost
-                  ? formatCurrency(results.total_cost)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Total Interest</strong>
-                {results.total_interest
-                  ? formatCurrency(results.total_interest)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Total Savings</strong>
-                {results.total_savings
-                  ? formatCurrency(results.total_savings)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Net Savings</strong>
-                {results.net_savings
-                  ? formatCurrency(results.net_savings)
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Payback Year</strong>
-                {results.payback_time === 0 ? (
-                  <span className="no-payback">
-                    Does not payback within installation lifetime
-                  </span>
-                ) : (
-                  results.payback_time
-                )}
-              </p>
-              <p>
-                <strong>Most Out of Pocket</strong>
-                {results.most_negative_cumulative_cashflow ? (
-                  <>
-                    {formatCurrency(results.most_negative_cumulative_cashflow)}
-                    <br />
-                    {" in year " + results.most_negative_cumulative_cashflow_year}
-                  </>
-                ) : 'N/A'}
-              </p>
-            </>
-          )}
+            </div>
+
+            <div className={`summary-card-description ${results.net_savings < 0 ? 'negative' : 'positive'}`}>
+              <h2>Net Savings</h2>
+            </div>
+          </div>
+
+          {/* Payback & Out of Pocket Card */}
+          <div className="summary-card">
+            
+            <div className="summary-card-content"> 
+              <div className="outcomes-grid">
+                <div>
+                  <strong>Payback Year:</strong> 
+                  {applyDiscount
+                    ? results.discounted_payback_time === 0
+                      ? <div className="warning-badge">Does not pay back within installation lifetime</div>
+                      : results.discounted_payback_time
+                    : results.payback_time === 0
+                      ? <div className="warning-badge">Does not pay back within installation lifetime</div>
+                      : results.payback_time}
+                </div>
+                <div>
+                  <strong>Most Out of Pocket:</strong>
+                  {applyDiscount
+                    ? results.discounted_most_negative_cumulative_cashflow
+                      ? <>
+                          {formatCurrency(results.discounted_most_negative_cumulative_cashflow)}
+                          <br />in year {results.discounted_most_negative_cumulative_cashflow_year}
+                        </>
+                      : 'N/A'
+                    : results.most_negative_cumulative_cashflow
+                      ? <>
+                          {formatCurrency(results.most_negative_cumulative_cashflow)}
+                          <br />in year {results.most_negative_cumulative_cashflow_year}
+                        </>
+                      : 'N/A'}
+                </div>
+              </div>  
+            </div>
+
+            <div className="summary-card-description">
+              <h2>Outcomes</h2>
+            </div> 
+
+          </div>
         </div>
       </div>
-      {results.yearly_details && (
+      )}
+
+      {activeResultsTab === "forecast" && results.yearly_details && (
         <div className="results-table-wrapper">
           <div className="results-header">
             <h1>Savings Forecast</h1>
@@ -226,6 +212,8 @@ Results.propTypes = {
   }).isRequired,
   applyDiscount: PropTypes.bool.isRequired,
   handleApplyDiscountChange: PropTypes.func.isRequired,
+  activeResultsTab: PropTypes.string,
+  setActiveResultsTab: PropTypes.func,
 };
 
 

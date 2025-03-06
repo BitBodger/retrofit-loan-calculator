@@ -71,11 +71,20 @@ const measureDefaults = {
     installation_cost: 7000,
     annual_savings: 650,
     lifetime: 25,
-    existingSystems: {
+    existingHeatingSystem: {
       old_electric_storage_heaters: 850,
       new_electric_storage_heaters: 750
     }
   },
+  battery: {
+    installation_cost: 5000,
+    annual_savings: 50,
+    lifetime: 25,
+    existingSolar: {
+      solar_pv: 850,
+      new_electric_storage_heaters: 750
+    }
+  }
 };
 
 export default measureDefaults;

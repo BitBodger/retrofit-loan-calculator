@@ -30,6 +30,7 @@ function MeasuresForm({ measures, handleMeasureChange, addNewMeasure, handleRemo
             <option value="draught_proofing">Draught Proofing</option>
             <option value="heat_pump">Heat Pump</option>
             <option value="solar_pv">Solar PV</option>
+            <option value="battery">Battery</option>
             <option value="double_glazing">Double Glazing</option>
             <option value="triple_glazing">Triple Glazing</option>
             <option value="heating_controls">Heating Controls</option>

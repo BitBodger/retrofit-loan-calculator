@@ -4,7 +4,7 @@ function PropertyForm({ inputs, handleChange }) {
   return (
     <div className="form-container">
       <div className="form-section">
-   
+        <h3>General</h3>
         <div className="form-group">
           <label>Home Size</label>
           <select
@@ -53,6 +53,63 @@ function PropertyForm({ inputs, handleChange }) {
       </div>
 
       <div className="form-section">
+        <h3>Building Fabric</h3>
+        <div className="form-group">
+          <label>Existing Wall Insulation</label>
+          <select
+            name="existing_wall_insulation"
+            value={inputs.existing_wall_insulation}
+            onChange={handleChange}
+          >
+            <option value="none">Uninsulated</option>
+            <option value="filled_cavity">Filled Cavity Wall</option>
+          </select>
+          <p className="field-description">
+            What kind of insulation do you currently have in your walls? 
+          </p>
+        </div>
+        
+        <div className="form-group">
+          <label>Existing Loft Insulation</label>
+          <select
+            name="existing_loft_insulation"
+            value={inputs.existing_loft_insulation}
+            onChange={handleChange}
+          >
+            <option value="none">Uninsulated</option>
+            <option value="mm100">100mm</option>
+            <option value="mm270">270mm</option>
+          </select>
+          <p className="field-description">
+            {
+              inputs.existing_loft_insulation === "mm100"
+                ? "This could do with topping up to 270mm"
+                : inputs.existing_loft_insulation === "none"
+                  ? "Loft insulation is one of the cheapest and most effective ways of reducing your bills. Insulate your loft!"
+                  : "270mm is an optimal thickness of loft insulation - no need to top-up"
+            }
+          </p>
+        </div>
+
+        <div className="form-group">
+          <label>Existing Floor Insulation</label>
+          <select
+            name="existing_floor_insulation"
+            value={inputs.existing_floor_insulation}
+            onChange={handleChange}
+          >
+            <option value="unisulated">Uninsulated</option>
+            <option value="insulated">Insulated</option>
+          </select>
+          <p className="field-description">
+
+          </p>
+        </div>
+
+      </div>
+
+      <div className="form-section">
+        <h3>Windows and Doors</h3>
         <div className="form-group">
           <label>Glazing</label>
           <select
@@ -87,56 +144,20 @@ function PropertyForm({ inputs, handleChange }) {
       </div>
 
       <div className="form-section">
-
+        <h3>Existing Renewables</h3>
         <div className="form-group">
-          <label>Existing Wall Insulation</label>
+          <label>Solar PV</label>
           <select
-            name="existing_wall-insulation"
-            value={inputs.existing_wall_insulation}
+            name="existing_solar"
+            value={inputs.existing_solar}
             onChange={handleChange}
           >
-            <option value="uninsulated">Uninsulated</option>
-            <option value="filled_cavity">Filled Cavity Wall</option>
+            <option value="none">Not Installed</option>
+            <option value="solar_pv">Solar PV</option>
+            <option value="solar_pv_and_battery">Solar PV and Battery</option>
           </select>
           <p className="field-description">
-            What kind of insulation do you currently have in your walls? 
-          </p>
-        </div>
-        
-        <div className="form-group">
-          <label>Existing Loft Insulation</label>
-          <select
-            name="existing_loft_insulation"
-            value={inputs.existing_loft_insulation}
-            onChange={handleChange}
-          >
-            <option value="uninsulated">Uninsulated</option>
-            <option value="mm100">100mm</option>
-            <option value="mm270">270mm</option>
-          </select>
-          <p className="field-description">
-            {
-              inputs.existing_loft_insulation === "100mm"
-                ? "This could do with topping up to 270mm"
-                : inputs.existing_loft_insulation === "none"
-                  ? "Loft insulation is one of the cheapest and most effective ways of reducing your bills. Insulate your loft!"
-                  : "270mm is an optimal thickness of loft insulation - no need to top-up"
-            }
-          </p>
-        </div>
-
-        <div className="form-group">
-          <label>Existing Floor Insulation</label>
-          <select
-            name="existing_floor_insulation"
-            value={inputs.existing_floor_insulation}
-            onChange={handleChange}
-          >
-            <option value="unisulated">Uninsulated</option>
-            <option value="insulated">Insulated</option>
-          </select>
-          <p className="field-description">
-
+            Existing solar PV system in the home 
           </p>
         </div>
 
@@ -159,6 +180,7 @@ PropertyForm.propTypes = {
     government_subsidy: PropTypes.string,
     home_size: PropTypes.string,
     existing_heating_system: PropTypes.string,
+    existing_solar: PropTypes.string,
     existing_glazing: PropTypes.string,
     existing_doors: PropTypes.string,
     existing_wall_insulation: PropTypes.string,

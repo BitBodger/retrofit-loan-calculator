@@ -376,15 +376,28 @@ input, select {
   border-bottom: 2px solid #5f280f; /* The 'folder' bottom line */
   margin: 1rem 0;
   transition: 1s;
+  height: 15px;
+  margin-top: 30px;
+}
+
+.results-tabs {
+  display: flex;
+  align-items: flex-end; /* Ensures tabs align nicely along the bottom */
+  border-bottom: 2px solid #5f280f; /* The 'folder' bottom line */
+  margin: 1rem 0;
+  transition: 1s;
+  height: 15px;
+  margin-top: 50px;
 }
 
 .inactive-tabs {
   scale: 0.8;
   transition: 1s;
+  margin-top: 30px;
 }
 
 /* Each tab button */
-.active-tabs button, .inactive-tabs button {
+.active-tabs button, .inactive-tabs button, .results-tabs button {
   background-color: #ffc69b;
   border: 1px solid #5f280f;
   border-bottom: none;
@@ -402,7 +415,7 @@ input, select {
 
 
 /* Active tab has a visible border and merges seamlessly with the bottom line */
-.active-tabs button.active, .inactive-tabs button.active {
+.active-tabs button.active, .inactive-tabs button.active, .results-tabs button.active {
   background-color: #ffba85;
   border: 1.5px solid #5f280f;
   border-left: 1px solid;
@@ -414,7 +427,7 @@ input, select {
 }
 
 /* Dot to the right of the tab text */
-.active-tabs button::after, .inactive-tabs button::after{
+.active-tabs button::after, .inactive-tabs button::after, .results-tabs button::after{
   content: "";
   width: 10px;
   height: 10px;
@@ -434,26 +447,99 @@ input, select {
   background-color: red;
 }
 
-.active-tabs button[data-dot="property"]::after, .inactive-tabs button[data-dot="property"]::after {
+.active-tabs button[data-dot="property"]::after {
   background-color: yellow;
 }
 
-.active-tabs button[data-dot="measures"]::after, .inactive-tabs button[data-dot="measures"]::after {
+.active-tabs button[data-dot="measures"]::after {
   background-color: blue;
 }
 
-.active-tabs button[data-dot="energy"]::after, .inactive-tabs button[data-dot="energy"]::after {
+.active-tabs button[data-dot="energy"]::after {
   background-color: purple;
+}
+
+.results-tabs button[data-dot="summary"]::after {
+  background-color: orange;
+}
+
+.results-tabs button[data-dot="forecast"]::after {
+  background-color: lightskyblue;
 }
 
 /* ========================================================= */
 /*                   TABLE & RESULTS STYLES                 */
 /* ========================================================= */
 
-.error-message {
-  color: red;
-  font-size: 0.8em;
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures description sits at the bottom */
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px 1px #bd9779;
+  overflow: hidden; /* Ensures nothing leaks past rounded corners */
+  min-height: 200px; /* Set this to whatever fits your content */
+}
+
+.summary-card-content {
+  background: #ffba85;
+  color: green;
+  text-align: left;
+  padding: 1rem;
+  flex: 1; /* Ensures it takes available space above the description */
+  text-align: center;
+}
+
+.summary-card-description {
+  background: green;
+  text-align: centre;
+  padding: 1rem;
+  color: #ffba85;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.summary-card-description h2 {
+  text-align: center;
+}
+
+.net-savings-value {
+  font-size: 2rem;
   font-weight: bold;
+}
+
+.summary-card-content.negative {
+  color: #da3c37;
+}  
+
+.summary-card-description.negative {
+  background: #da3c37;
+}  
+
+.net-savings-value.positive {
+  color: green;
+}
+
+.totals-grid, .outcomes-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.warning-badge {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: inline-block;
 }
 
 .summary-totals p {
@@ -463,8 +549,9 @@ input, select {
 table {
   width: 1000px;
   border-collapse: collapse;
-  margin: 0;
+  margin: 1rem 0 0 0;
   table-layout: fixed;
+  box-shadow: 0px 0px 5px 1px #bd9779;
 }
 
 table th {
